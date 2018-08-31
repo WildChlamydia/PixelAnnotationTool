@@ -15,7 +15,7 @@
 #include <QColorDialog>
 #include <QTextStream>
 #include <QSettings>
-#include "pixel_annotation_tool_version.h"
+//#include "pixel_annotation_tool_version.h"
 
 #include "about_dialog.h"
 
@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	: QMainWindow(parent, flags)
 {
 	setupUi(this);
-	setWindowTitle(QApplication::translate("MainWindow", "PixelAnnotationTool " PIXEL_ANNOTATION_TOOL_GIT_TAG, Q_NULLPTR));
+    setWindowTitle(QApplication::translate("MainWindow", "PixelAnnotationTool " "0.3", Q_NULLPTR));
 	list_label->setSpacing(1);
     image_canvas = NULL;
 	save_action = new QAction(tr("&Save current image"), this);
