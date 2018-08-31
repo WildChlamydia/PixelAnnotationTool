@@ -33,3 +33,4 @@
 script_to_build/build/
 scripts_to_build/build/
 scripts_to_build/squashfs-root/
+*.user
