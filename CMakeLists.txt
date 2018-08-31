@@ -65,7 +65,6 @@ add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
   ${UI_TEST_HDRS}
   ${RSCS})
 target_link_libraries(PixelAnnotationTool Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})	
-add_custom_command(TARGET PixelAnnotationTool PRE_BUILD COMMAND cmake -P ${CMAKE_BINARY_DIR}/git_version.cmake)
 
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)
 set(NAME_RELEASE PixelAnnotationTool_${ARCH_TYPE}_v${PIXEL_ANNOTATION_VERSION})
