@@ -26,7 +26,9 @@ ImageCanvas::ImageCanvas(MainWindow *ui) :
 
     _scroll_parent->setBackgroundRole(QPalette::Dark);
     _scroll_parent->setWidget(this);
-
+    ui->spinbox_scale->setSingleStep(ZOOM_STEP);
+    ui->spinbox_scale->setMinimum(ZOOM_MIN);
+    ui->spinbox_scale->setMaximum(ZOOM_MAX);
 }
 
 ImageCanvas::~ImageCanvas() {
@@ -38,8 +40,9 @@ void ImageCanvas::_initPixmap() {
 	newPixmap.fill(Qt::white);
 	QPainter painter(&newPixmap);
 	const QPixmap * p = pixmap();
-	if (p != NULL)
+    if (p != NULL) {
 		painter.drawPixmap(0, 0, *pixmap());
+    }
 	painter.end();
 	setPixmap(newPixmap);
 }
@@ -95,12 +98,15 @@ void ImageCanvas::saveMask() {
         cv::Mat temp = qImage2Mat(colored);
         cv::imwrite(color_file.toStdString(), temp);
 	}
-    _undo_list.clear();
-    _undo_index = 0;
+//    _undo_list.clear();
+//    _undo_index = 0;
     _ui->setStarAtNameOfTab(false);
 }
 
 void ImageCanvas::scaleChanged(double scale) {
+    if (scale == 0.0) {
+        return;
+    }
 	_scale  = scale ;
 	resize(_scale * _image.size());
 	repaint();
@@ -112,24 +118,28 @@ void ImageCanvas::alphaChanged(double alpha) {
 }
 
 void ImageCanvas::paintEvent(QPaintEvent *event) {
-	QPainter painter(this);
+
+    QPainter painter(this);
 	painter.setRenderHint(QPainter::Antialiasing, false);
-	QRect rect = painter.viewport();
-	QSize size = _scale * _image.size();
-	if (size != _image.size()) {
-		rect.size().scale(size, Qt::KeepAspectRatio);
-		painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
-		painter.setWindow(pixmap()->rect());
-	}
-	painter.drawImage(QPoint(0, 0), _image);
+    QRect rect = painter.viewport();
+    QSize size = _scale * _image.size();
+
+    if (size != _image.size()) {
+        rect.size().scale(size, Qt::KeepAspectRatio);
+        painter.setViewport(rect.x(), rect.y(), size.width(), size.height());
+        painter.setWindow(pixmap()->rect());
+    }
+    QPoint topleft = QPoint(0, 0);
+
+    painter.drawImage(topleft, _image);
 	painter.setOpacity(_alpha);
 
-	if (!_mask.id.isNull() && _ui->checkbox_manuel_mask->isChecked()) {
-		painter.drawImage(QPoint(0, 0), _mask.color);
+    if (!_mask.id.isNull() && _ui->checkbox_manuel_mask->isChecked()) {
+        painter.drawImage(topleft, _mask.color);
 	}
 		
 	if (!_watershed.id.isNull() && _ui->checkbox_watershed_mask->isChecked()) {
-		painter.drawImage(QPoint(0, 0), _watershed.color);
+        painter.drawImage(topleft, _watershed.color);
 	}
 
 	if (_mouse_pos.x() > 10 && _mouse_pos.y() > 10 && 
@@ -137,17 +147,34 @@ void ImageCanvas::paintEvent(QPaintEvent *event) {
 		_mouse_pos.y() <= QLabel::size().height()-10) {
 		painter.setBrush(QBrush(_color.color));
 		painter.setPen(QPen(QBrush(_color.color), 1.0));
-		painter.drawEllipse(_mouse_pos.x() / _scale - _pen_size / 2, _mouse_pos.y() / _scale - _pen_size / 2, _pen_size, _pen_size);
+        if (!_carry_activated) {
+            painter.drawEllipse(_mouse_pos.x() / _scale - _pen_size / 2,
+                                _mouse_pos.y() / _scale - _pen_size / 2, _pen_size, _pen_size);
+        }
 		painter.end();
-	}
+    }
+
+
+
 }
 
 void ImageCanvas::mouseMoveEvent(QMouseEvent * e) {
+
+    auto shift = _mouse_pos - e->pos();
+
 	_mouse_pos.setX(e->x());
 	_mouse_pos.setY(e->y());
 
-	if (_button_is_pressed) 
+    if (_button_is_pressed) {
 		_drawFillCircle(e);
+    }
+    if (_carry_activated){
+        qDebug() << shift;
+        _scroll_parent->verticalScrollBar()->setValue(_scroll_parent->verticalScrollBar()->value()
+                                                      + shift.y() * CARRY_SPEED);
+        _scroll_parent->horizontalScrollBar()->setValue(_scroll_parent->horizontalScrollBar()->value()
+                                                        + shift.x() * CARRY_SPEED);
+    }
 
 	update();
 }
@@ -158,8 +185,12 @@ void ImageCanvas::setSizePen(int pen_size) {
 
 
 void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
+
 	if(e->button() == Qt::LeftButton) {
 		_button_is_pressed = false;
+        _carry_activated = false;
+        qApp->setOverrideCursor(Qt::ArrowCursor);
+        repaint();
 		
 		if (_undo) {
 			QMutableListIterator<ImageMask> it(_undo_list);
@@ -198,9 +229,15 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 
 void ImageCanvas::mousePressEvent(QMouseEvent * e) {
 	setFocus();
-	if (e->button() == Qt::LeftButton) {
-		_button_is_pressed = true;
-		_drawFillCircle(e);
+    if (e->button() == Qt::LeftButton) {
+        if (Qt::ShiftModifier == e->modifiers()) {
+            _carry_activated = true;
+            qApp->setOverrideCursor(Qt::PointingHandCursor);
+            repaint();
+        } else {
+            _button_is_pressed = true;
+            _drawFillCircle(e);
+        }
 	}
 }
 
@@ -217,36 +254,85 @@ void ImageCanvas::_drawFillCircle(QMouseEvent * e) {
 	update();
 }
 
+double ImageCanvas::getScale() const
+{
+    return _scale;
+}
+
 void ImageCanvas::clearMask() {
-	_mask = ImageMask(_image.size());
-	_watershed = ImageMask(_image.size());
-	_undo_list.clear();
+    _mask = ImageMask(_image.size());
+    _watershed = ImageMask(_image.size());
+    _undo_list.clear();
 	_undo_index = 0;
 	repaint();
 	
 }
 
-void ImageCanvas::wheelEvent(QWheelEvent * event) {
-	int delta = event->delta() > 0 ? 1 : -1;
-	if (Qt::ShiftModifier == event->modifiers()) {
-        _scroll_parent->verticalScrollBar()->setEnabled(false);
-		int value = _ui->spinbox_pen_size->value() + delta * _ui->spinbox_pen_size->singleStep();
-		_ui->spinbox_pen_size->setValue(value);
-		emit(_ui->spinbox_pen_size->valueChanged(value));
-		setSizePen(value);
-		repaint();
-	} else if (Qt::ControlModifier == event->modifiers()) {
-		_scroll_parent->verticalScrollBar()->setEnabled(false);
-		double value = _ui->spinbox_scale->value() + delta * _ui->spinbox_scale->singleStep();
-		value = std::min<double>(_ui->spinbox_scale->maximum(),value);
-		value = std::max<double>(_ui->spinbox_scale->minimum(), value);
+void ImageCanvas::scaleCanvas(int delta)
+{
 
-		_ui->spinbox_scale->setValue(value);
-		scaleChanged(value);
-		repaint();
-	} else {
+    double step = ZOOM_STEP;
+    if (_ui->spinbox_scale->value() < ZOOM_TRESH){
+        step = SMALL_ZOOM_STEP;
+    }
+    if (fabs(_ui->spinbox_scale->value() - ZOOM_TRESH) < FLOAT_DELTA) {
+        if (delta < 0) {
+            step = SMALL_ZOOM_STEP;
+        }
+        if (delta > 0) {
+            step = ZOOM_STEP;
+        }
+    }
+
+    double value = _ui->spinbox_scale->value() + delta * step;
+    value = std::min<double>(_ui->spinbox_scale->maximum(), value);
+    value = std::max<double>(_ui->spinbox_scale->minimum(), value);
+    if (_ui->spinbox_scale->value() > ZOOM_TRESH && value < ZOOM_TRESH
+            || _ui->spinbox_scale->value() < ZOOM_TRESH && value > ZOOM_TRESH) {
+        value = ZOOM_TRESH;
+    }
+
+    double v_w = _scroll_parent->viewport()->width() - _scroll_parent->frameWidth();
+    double v_h = _scroll_parent->viewport()->height() - _scroll_parent->frameWidth();
+
+    if (delta < 0 && (value * _image.size().width() <= v_w
+            &&
+        value * _image.size().height() <= v_h)) {
+
+        if (_scale * _image.size().width() <= v_w && _scale * _image.size().height() <= v_h) {
+            qDebug() << "return";
+            return;
+        }
+
+        value = std::min((v_h + _scroll_parent->verticalScrollBar()->width()) / _image.size().height(),
+                         (v_w + _scroll_parent->horizontalScrollBar()->height()) / _image.size().width());
+
+    }
+
+    _ui->spinbox_scale->setValue(value);
+    scaleChanged(value);
+
+    repaint();
+}
+
+void ImageCanvas::wheelEvent(QWheelEvent * event) {
+
+    int delta = event->delta() > 0 ? 1 : -1;
+    if (Qt::ShiftModifier == event->modifiers()) {
+
+        int value = _ui->spinbox_pen_size->value() + delta * _ui->spinbox_pen_size->singleStep();
+        _ui->spinbox_pen_size->setValue(value);
+        emit(_ui->spinbox_pen_size->valueChanged(value));
+        setSizePen(value);
+        repaint();
+    } else if (Qt::ControlModifier == event->modifiers()) {
+        _scroll_parent->verticalScrollBar()->setEnabled(false);
+        scaleCanvas(delta);
+        event->ignore();
+    } else {
         _scroll_parent->verticalScrollBar()->setEnabled(true);
-	}
+    }
+
 }
 
 void ImageCanvas::keyPressEvent(QKeyEvent * event) {

@@ -15,6 +15,8 @@
 #include <QColor>
 #include <QScrollArea>
 #include <QAbstractListModel>
+#include <QTimer>
+#include <QtGlobal>
 
 #include <qstringlistmodel.h>
 
@@ -22,6 +24,8 @@
 #include "image_canvas.h"
 #include "label_widget.h"
 #include "labels.h"
+
+constexpr ushort AUTOSAVE_TIME_SECONDS = 10;
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT
@@ -37,6 +41,7 @@ private:
     ImageCanvas * getImageCanvas(int index);
 
     void openDirectory();
+    QTimer _timer_autosave;
 
 public:
 	ImageCanvas   *  image_canvas ;
@@ -53,13 +58,14 @@ public:
 public:
 	QString currentDir() const;
 	QString currentFile() const;
-	void updateConnect(const ImageCanvas * ic);
+    void updateConnect(ImageCanvas *ic);
     void allDisconnnect(const ImageCanvas * ic);
     void runWatershed(ImageCanvas * ic);
     void setStarAtNameOfTab(bool star);
 
 public slots:
 
+    void autosave();
 	void changeLabel(QListWidgetItem*, QListWidgetItem*);
 	void changeColor(QListWidgetItem*);
 	void saveConfigFile();

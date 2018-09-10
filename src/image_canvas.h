@@ -7,8 +7,17 @@
 #include <QLabel>
 #include <QPen>
 #include <QScrollArea>
+#include <QCursor>
 
 class MainWindow;
+
+constexpr double ZOOM_STEP = 0.5;
+constexpr double SMALL_ZOOM_STEP = 0.1;
+constexpr double ZOOM_MIN = 0.1;
+constexpr double ZOOM_MAX = 10.0;
+constexpr double FLOAT_DELTA = 0.000001;
+constexpr double ZOOM_TRESH = 1.0;
+constexpr double CARRY_SPEED = 1.2;
 
 class ImageCanvas : public QLabel {
 	Q_OBJECT
@@ -31,8 +40,10 @@ public:
 	QScrollArea * getScrollParent() const { return _scroll_parent; }
     bool isNotSaved() const { return _undo_list.size() > 1; }
 
+    double getScale() const;
+
 protected:
-	void mouseMoveEvent(QMouseEvent * event) override;
+    void mouseMoveEvent(QMouseEvent * event) override;
 	void mousePressEvent(QMouseEvent * event) override;
 	void keyPressEvent(QKeyEvent * event) override;
 	void wheelEvent(QWheelEvent * event) override;
@@ -47,6 +58,7 @@ public slots :
 	void saveMask();
 	void undo();
 	void redo();
+    void scaleCanvas(int delta);
 	
 private:
 	MainWindow *_ui;
@@ -69,8 +81,8 @@ private:
 	QString          _watershed_file   ;
 	ColorMask        _color            ;
 	int              _pen_size         ;
-	bool             _button_is_pressed;
-
+    bool             _button_is_pressed;
+    bool             _carry_activated = false;
 };
 
 

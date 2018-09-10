@@ -62,11 +62,18 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	loadConfigLabels();
 
 	connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
-	connect(list_label, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(changeColor(QListWidgetItem*)));
+    // WARNING: here color picker by label double click is disabled.
+    //connect(list_label, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(changeColor(QListWidgetItem*)));
 
     list_label->setEnabled(false);
     openDirectory();
 
+    connect(&_timer_autosave,
+            &QTimer::timeout,
+            this,
+            &MainWindow::autosave);
+
+    _timer_autosave.start(AUTOSAVE_TIME_SECONDS * 1000);
 }
 
 void MainWindow::closeCurrentTab() {
@@ -193,9 +200,26 @@ void MainWindow::setStarAtNameOfTab(bool star) {
     }
 }
 
-void MainWindow::updateConnect(const ImageCanvas * ic) {
-    if (ic == NULL) return;
-    connect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
+void MainWindow::autosave()
+{
+    if (!image_canvas)
+        return;
+
+    if (!image_canvas->isNotSaved())
+        return;
+
+    image_canvas->saveMask();
+}
+
+void MainWindow::updateConnect(ImageCanvas * ic) {
+    if (ic == nullptr)
+        return;
+
+    connect(spinbox_scale, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
+            [=](double val){
+        ic->scaleChanged(val);
+    });
+
     connect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
     connect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
 	connect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
