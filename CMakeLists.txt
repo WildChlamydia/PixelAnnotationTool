@@ -1,7 +1,30 @@
 cmake_minimum_required(VERSION 3.2)
 project(PixelAnnotationTool)
-
+set(CMAKE_PREFIX_PATH E:\\Development\\Qt5.7_VS15\\5.7\\msvc2015)
+set(OpenCV_DIR E:\\Development\\opencv\\build)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
+
+if(NOPE)
+  # StringPooling: true == /GF  false == /GF-
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GF")
+
+  # RuntimeLibrary
+  # 0 (MultiThreaded) == /MT
+  # 1 (MultiThreadedDebug) == /MTd
+  # 2 (MultiThreadedDLL) == /MD
+  # 3 (MultiThreadedDebugDLL) == /MDd
+  set(CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} /MD")
+  set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} /MDd")
+
+  # TreatWChar_tAsBuiltInType: true == /Zc:wchar_t  false == /Zc:wchar_t-
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Zc:wchar_t")
+
+  # WarningLevel: /W<level 0 to 4> or /Wall
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /W3")
+
+  # Detect64BitPortabilityProblems: /Wp64 - Deprecated since VC++ 2010
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wp64")
+endif()
 
 find_package(Qt5Widgets REQUIRED)
 if (UNIX)
@@ -63,7 +86,8 @@ add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
 	src/label_widget.h 
 	src/main.cpp 
   ${UI_TEST_HDRS}
-  ${RSCS})
+  ${RSCS}
+  icon.rc)
 target_link_libraries(PixelAnnotationTool Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})	
 
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)
@@ -85,8 +109,6 @@ else()
 	message(STATUS "Curl is found")
 endif()
 
-file(COPY ${CMAKE_CURRENT_SOURCE_DIR}/default.png DESTINATION ${DIR_NAME_RELEASE}/ )
-
 if( MSVC )  # ---------------------------- WINDOWS --------------------------------------------------------------------
     set(DLLs_DEP_RELEASE "${QT5_DIR}/../../bin/Qt5Widgets.dll"
                          "${QT5_DIR}/../../bin/Qt5Gui.dll"
@@ -100,8 +122,6 @@ if( MSVC )  # ---------------------------- WINDOWS -----------------------------
       set(DLLs_DEP_DEBUG ${DLLs_DEP_DEBUG} "${OpenCV_BIN}/${_comp}${CV_VERSION_NUMBER}d.dll")
       set(DLLs_DEP_RELEASE_DEPLOYMENT ${DLLs_DEP_RELEASE} "${CMAKE_CURRENT_BINARY_DIR}/${_comp}${CV_VERSION_NUMBER}.dll")
     endforeach()
-    file(COPY ${DLLs_DEP_RELEASE} ${DLLs_DEP_DEBUG} DESTINATION ${CMAKE_CURRENT_BINARY_DIR})
-    file(COPY ${DLLs_DEP_RELEASE_DEPLOYMENT} DESTINATION ${DIR_NAME_RELEASE})
 	
 	add_custom_target(make_zip 
 		COMMAND ${QT5_DIR}/../../bin/windeployqt ${DIR_NAME_RELEASE}

@@ -5,7 +5,7 @@
 
 ImageMask::ImageMask() {}
 ImageMask::ImageMask(const QString &file, Id2Labels id_labels) {
-	id = mat2QImage(cv::imread(file.toStdString()));
+	id = mat2QImage(cv::imread(file.toLocal8Bit().toStdString()));
 	color = idToColor(id, id_labels);
 }
 ImageMask::ImageMask(QSize s) {

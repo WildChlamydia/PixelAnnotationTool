@@ -47,6 +47,7 @@ void ImageCanvas::_initPixmap() {
 	setPixmap(newPixmap);
 }
 
+#include <iostream>
 void ImageCanvas::loadImage(const QString &filename) {
 	if (!_image.isNull() )
 		saveMask();
@@ -55,7 +56,7 @@ void ImageCanvas::loadImage(const QString &filename) {
 	QFileInfo file(_img_file);
 	if (!file.exists()) return;
 
-	_image = mat2QImage(cv::imread(_img_file.toStdString()));
+ 	_image = mat2QImage(cv::imread(_img_file.toLocal8Bit().toStdString()));
 	
 	_mask_file = file.dir().absolutePath()+ "/" + file.baseName() + "_mask.png";
 	_watershed_file = file.dir().absolutePath()+ "/" + file.baseName() + "_watershed_mask.png";
@@ -96,7 +97,7 @@ void ImageCanvas::saveMask() {
 
         //colored.save(color_file, "PNG", 100);
         cv::Mat temp = qImage2Mat(colored);
-        cv::imwrite(color_file.toStdString(), temp);
+        cv::imwrite(color_file.toLocal8Bit().toStdString(), temp);
 	}
 //    _undo_list.clear();
 //    _undo_index = 0;

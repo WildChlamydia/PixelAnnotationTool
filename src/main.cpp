@@ -10,6 +10,8 @@
 #include <QTranslator>
 #ifdef Q_OS_WIN
 #include <QTextCodec>
+#define _HAS_ITERATOR_DEBUGGING 0
+#define _ITERATOR_DEBUG_LEVEL 0
 #endif
 
 int main(int argc, char *argv[])
