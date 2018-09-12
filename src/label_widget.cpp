@@ -14,7 +14,7 @@ LabelWidget::LabelWidget(const LabelInfo &label, QWidget *parent , Qt::WindowFla
 void LabelWidget::setNewLabel(const LabelInfo &label) {
 	_label = label;
 	setText(label.name);
-	setAlignment(Qt::AlignHCenter);
+    setAlignment(Qt::AlignHCenter | Qt::AlignVCenter);
     setStyleSheet("QLabel { background-color : " + label.color.name()
                   + "; color : " + invColor(_label.color).name() + ";  font: bold 14px; }");
 }

@@ -42,6 +42,8 @@ public:
 
     double getScale() const;
 
+    void replaceCurrentLabel(const LabelInfo& dst);
+
 protected:
     void mouseMoveEvent(QMouseEvent * event) override;
 	void mousePressEvent(QMouseEvent * event) override;
@@ -61,6 +63,8 @@ public slots :
     void scaleCanvas(int delta);
 	
 private:
+    bool eventFilter(QObject *target, QEvent *event) override;
+
 	MainWindow *_ui;
 	
 	void _initPixmap();
@@ -75,7 +79,7 @@ private:
 	QList<ImageMask> _undo_list        ;
 	bool             _undo             ;
 	int              _undo_index       ;
-	QPoint           _mouse_pos        ;
+    QPoint           _local_mouse_pos        ;
 	QString          _img_file         ;
 	QString          _mask_file        ;
 	QString          _watershed_file   ;
@@ -83,6 +87,7 @@ private:
 	int              _pen_size         ;
     bool             _button_is_pressed;
     bool             _carry_activated = false;
+    QPoint           _global_mouse_pos = QPoint(0, 0);
 };
 
 

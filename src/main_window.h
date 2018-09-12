@@ -27,6 +27,8 @@
 
 constexpr ushort AUTOSAVE_TIME_SECONDS = 10;
 
+const QString VERSION = "v1.0beta";
+
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT
 
@@ -54,7 +56,8 @@ public:
     QAction        * close_tab_action;
 	QAction        * undo_action  ;
 	QAction        * redo_action  ;
-	QString          curr_open_dir;
+    QString          curr_open_dir;
+
 public:
 	QString currentDir() const;
 	QString currentFile() const;
@@ -62,12 +65,13 @@ public:
     void allDisconnnect(const ImageCanvas * ic);
     void runWatershed(ImageCanvas * ic);
     void setStarAtNameOfTab(bool star);
+    bool eventFilter(QObject *target, QEvent *event);
 
 public slots:
 
     void autosave();
 	void changeLabel(QListWidgetItem*, QListWidgetItem*);
-	void changeColor(QListWidgetItem*);
+    void changeColor(QListWidgetItem *item);
 	void saveConfigFile();
 	void loadConfigFile();
 	void runWatershed();

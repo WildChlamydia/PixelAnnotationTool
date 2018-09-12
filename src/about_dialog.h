@@ -23,6 +23,8 @@
 #include <QObject>
 #include <QWidget>
 
+#include "main_window.h"
+
 class AboutDialog : public QDialog {
 
 	Q_OBJECT

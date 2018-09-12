@@ -23,7 +23,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	: QMainWindow(parent, flags)
 {
 	setupUi(this);
-    setWindowTitle(QApplication::translate("MainWindow", "PixelAnnotationTool " "0.3", Q_NULLPTR));
+
 	list_label->setSpacing(1);
     image_canvas = NULL;
 	save_action = new QAction(tr("&Save current image"), this);
@@ -61,9 +61,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
 	loadConfigLabels();
 
-	connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
-    // WARNING: here color picker by label double click is disabled.
-    //connect(list_label, SIGNAL(itemDoubleClicked(QListWidgetItem*)), this, SLOT(changeColor(QListWidgetItem*)));
+    connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
 
     list_label->setEnabled(false);
     openDirectory();
@@ -74,6 +72,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
             &MainWindow::autosave);
 
     _timer_autosave.start(AUTOSAVE_TIME_SECONDS * 1000);
+    list_label->installEventFilter(this);
 }
 
 void MainWindow::closeCurrentTab() {
@@ -121,28 +120,29 @@ void MainWindow::loadConfigLabels() {
     for (const auto& key : list) {
         const LabelInfo & label = labels[key];
 		QListWidgetItem * item = new QListWidgetItem(list_label);
-		LabelWidget * label_widget = new LabelWidget(label,this);
+        LabelWidget * label_widget = new LabelWidget(label, this);
+
+        // WARNING: Magic label item height constant
+        label_widget->setFixedHeight(32);
 		
 		item->setSizeHint(label_widget->sizeHint());
 		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
 		list_label->addItem(item);
 		list_label->setItemWidget(item, label_widget);
         labels[key].item = item;
+
+        label_widget->installEventFilter(this);
 	}
 	id_labels = getId2Label(labels);
 }
 
-void MainWindow::changeColor(QListWidgetItem* item) {
+void MainWindow::changeColor(QListWidgetItem *item) {
+
+    if (!item) return;
+
 	LabelWidget * widget = static_cast<LabelWidget*>(list_label->itemWidget(item));
-	LabelInfo & label = labels[widget->text()];
-	QColor color = QColorDialog::getColor(label.color, this);
-	if (color.isValid()) {
-		label.color = color;
-		widget->setNewLabel(label);
-	}
-	image_canvas->setId(label.id);
-	image_canvas->updateMaskColor(id_labels);
-	image_canvas->refresh();
+    const LabelInfo &label = labels[widget->text()];
+    image_canvas->replaceCurrentLabel(label);
 }
 
 void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous) {
@@ -151,8 +151,8 @@ void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous
 
 	LabelWidget * label;
 	if (previous == NULL) {
-		for (int i = 0; i < list_label->count(); i++) {
-			LabelWidget * label = static_cast<LabelWidget*>(list_label->itemWidget(list_label->item(i)));
+        for (short i = 0, total = list_label->count(); i < total; ++i) {
+            LabelWidget* label = static_cast<LabelWidget*>(list_label->itemWidget(list_label->item(i)));
 			label->setSelected(false);
 		}
 	} else {
@@ -169,13 +169,14 @@ void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous
 	QString key = label->text();
 	QTextStream sstr(&str);
 	sstr <<"label=["<< key <<"] id=[" << labels[key].id << "] categorie=[" << labels[key].categorie << "] color=[" << labels[key].color.name() << "]" ;
-	statusBar()->showMessage(str);
+    //statusBar()->showMessage(str);
 	image_canvas->setId(labels[key].id);
 }
 
 void MainWindow::runWatershed(ImageCanvas * ic) {
-	ic->setWatershedMask(watershed(ic->getImage(), ic->getMask().id));
-	checkbox_watershed_mask->setCheckState(Qt::CheckState::Checked);
+    auto w = watershed(ic->getImage(), ic->getMask().id);
+    ic->setWatershedMask(w);
+    //checkbox_watershed_mask->setCheckState(Qt::CheckState::Checked);
 	ic->update();
 }
 
@@ -200,6 +201,41 @@ void MainWindow::setStarAtNameOfTab(bool star) {
     }
 }
 
+bool MainWindow::eventFilter(QObject *target, QEvent *event)
+{
+    if (qobject_cast<LabelWidget*>(target)) {
+        if ((event->type() == QEvent::MouseButtonPress ||
+            event->type() == QEvent::MouseButtonRelease ||
+                event->type() == QEvent::MouseButtonDblClick) &&
+                ((QMouseEvent*)(event))->button() == Qt::RightButton) {
+            return true;
+        }
+        return false;
+    }
+    if (target == list_label) {
+        if (event->type() == QEvent::ContextMenu) {
+            const auto& p = QCursor::pos();
+            QListWidgetItem *item = nullptr;
+            auto wid_pos = list_label->mapToGlobal(list_label->rect().topLeft());
+            QRect wid_rect;
+            for (short i = 0; i < list_label->count(); ++i){
+                item = list_label->item(i);
+                wid_rect.setTop(wid_pos.y() + (list_label->itemWidget(item)->height() + 2) * i);
+                wid_rect.setLeft(wid_pos.x());
+                wid_rect.setWidth(list_label->itemWidget(item)->width());
+                wid_rect.setHeight(list_label->itemWidget(item)->height());
+                if (wid_rect.contains(p)) {
+                    changeColor(item);
+                    return true;
+                }
+            }
+            return false;
+        }
+    }
+
+    return false;
+}
+
 void MainWindow::autosave()
 {
     if (!image_canvas)
@@ -222,7 +258,7 @@ void MainWindow::updateConnect(ImageCanvas * ic) {
 
     connect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
     connect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
-	connect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
+    //connect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
 	connect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
 	connect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
 	connect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
@@ -237,7 +273,7 @@ void MainWindow::allDisconnnect(const ImageCanvas * ic) {
     disconnect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
     disconnect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
     disconnect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
-    disconnect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
+    //disconnect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
     disconnect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
     disconnect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
     disconnect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
@@ -273,7 +309,7 @@ ImageCanvas * MainWindow::getImageCanvas(int index) {
 }
 
 int MainWindow::getImageCanvas(QString name, ImageCanvas * ic) {
-	for (int i = 0; i < tabWidget->count(); i++) {
+    for (short i = 0; i < tabWidget->count(); ++i) {
 		if (tabWidget->tabText(i).startsWith(name) ) {
             ic = getImageCanvas(i);
 			return i;
@@ -284,7 +320,7 @@ int MainWindow::getImageCanvas(QString name, ImageCanvas * ic) {
 	QString filepath(iDir + "/" + name);
 	ic->loadImage(filepath);
     int index = tabWidget->addTab(ic->getScrollParent(), name);
-    
+    tabWidget->widget(index)->setFocus(Qt::ActiveWindowFocusReason);
 	return index;
 }
 
@@ -307,6 +343,7 @@ QString MainWindow::currentFile() const {
 
 
 void MainWindow::treeWidgetClicked() {
+
     QString iFile = currentFile();
     QString iDir = currentDir();
     if (iFile.isEmpty() || iDir.isEmpty())
@@ -336,12 +373,12 @@ void MainWindow::openDirectory()
     QDir current_dir(curr_open_dir);
     QStringList files = current_dir.entryList();
     static QStringList ext_img = { "png","jpg","bmp","pgm","jpeg" ,"jpe" ,"jp2" ,"pbm" ,"ppm" ,"tiff" ,"tif" };
-    for (int i = 0; i < files.size(); i++) {
+    for (short i = 0, total_f = files.size(); i < total_f; ++i) {
         if (files[i].size() < 4)
             continue;
         QString ext = files[i].section(".", -1, -1);
         bool is_image = false;
-        for (int e = 0; e < ext_img.size(); e++) {
+        for (short e = 0, total = ext_img.size(); e < total; ++e) {
             if (ext.toLower() == ext_img[e]) {
                 is_image = true;
                 break;
@@ -359,7 +396,7 @@ void MainWindow::openDirectory()
 }
 
 void MainWindow::on_actionOpenDir_triggered() {
-	statusBar()->clearMessage();
+    //statusBar()->clearMessage();
 
     QSettings settings("Home", "PixelAnnotation");
 

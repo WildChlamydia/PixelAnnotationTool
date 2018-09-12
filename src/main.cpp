@@ -27,6 +27,7 @@ int main(int argc, char *argv[])
     app.installTranslator(&qtTranslator);
 
 	MainWindow win;
+    win.setWindowTitle("PixelAnnotationTool " + VERSION);
     win.setWindowIcon(QIcon("://icon.png"));
 
 	win.show();

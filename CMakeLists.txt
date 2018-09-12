@@ -1,10 +1,13 @@
 cmake_minimum_required(VERSION 3.2)
 project(PixelAnnotationTool)
-set(CMAKE_PREFIX_PATH E:\\Development\\Qt5.7_VS15\\5.7\\msvc2015)
-set(OpenCV_DIR E:\\Development\\opencv\\build)
+
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
-if(NOPE)
+if(WIN32)
+  # Steup yours
+  set(CMAKE_PREFIX_PATH E:\\Development\\Qt5.7_VS15\\5.7\\msvc2015)
+  set(OpenCV_DIR E:\\Development\\opencv\\build)
+
   # StringPooling: true == /GF  false == /GF-
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /GF")
 
@@ -24,16 +27,24 @@ if(NOPE)
 
   # Detect64BitPortabilityProblems: /Wp64 - Deprecated since VC++ 2010
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /Wp64")
+
+  # Max speed
+  string(REPLACE "/O2" "/Od" CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}")
+  string(REPLACE "-O2" "-O0" CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE}")
+  string(CONCAT CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE}" " /Zi")
+
 endif()
 
 find_package(Qt5Widgets REQUIRED)
 if (UNIX)
+
+  MESSAGE ("Build with maximum optimization for release")
+  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  set(CMAKE_CXX_FLAGS_DEBUG "-g")
   set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)
 endif (UNIX)
 set(CMAKE_AUTOMOC ON)
 set (CMAKE_CXX_STANDARD 14)
-set(CMAKE_CXX_FLAGS_DEBUG "-g")
-set(CMAKE_CXX_FLAGS_RELEASE "-O3")
 
 if(WIN32)
 	if(CMAKE_CL_64)

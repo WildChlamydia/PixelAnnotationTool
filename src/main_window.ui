@@ -120,11 +120,6 @@
    <addaction name="menuTool"/>
    <addaction name="menuHelp"/>
   </widget>
-  <widget class="QStatusBar" name="statusbar">
-   <property name="enabled">
-    <bool>false</bool>
-   </property>
-  </widget>
   <widget class="QDockWidget" name="dock_label">
    <property name="features">
     <set>QDockWidget::DockWidgetFloatable|QDockWidget::DockWidgetMovable</set>
@@ -249,13 +244,6 @@
          </property>
          <property name="checked">
           <bool>true</bool>
-         </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QCheckBox" name="checkbox_watershed_mask">
-         <property name="text">
-          <string>Watershed Mask</string>
          </property>
         </widget>
        </item>
