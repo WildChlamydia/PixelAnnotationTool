@@ -95,7 +95,8 @@ add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
 	src/image_canvas.h
 	src/label_widget.cpp 
 	src/label_widget.h 
-	src/main.cpp 
+  src/main.cpp
+  src/rus.qm
   ${UI_TEST_HDRS}
   ${RSCS}
   icon.rc)

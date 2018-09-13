@@ -27,7 +27,7 @@
 
 constexpr ushort AUTOSAVE_TIME_SECONDS = 10;
 
-const QString VERSION = "v1.0beta";
+const QString VERSION = "v1.1stable";
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT

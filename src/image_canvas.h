@@ -66,14 +66,27 @@ public slots :
 private:
     bool eventFilter(QObject *target, QEvent *event) override;
 
-    void addUndo() {
+    inline void addUndo() {
+
         if (_undo_list.size() >= MAX_UNDO_SIZE) {
             _undo_list.pop_front();
             --_undo_index;
         }
+
+        if (_undo_index != _undo_list.size()) {
+            _undo_list = _undo_list.mid(0, _undo_index);
+        }
+
         _undo_list.push_back(_mask);
         ++_undo_index;
         _is_saved = false;
+
+        auto index = 0;
+        for (auto t: _undo_list) {
+            auto tt = t.color;
+            auto m = qImage2Mat(tt);
+            cv::imwrite(QString("/home/undead/undo/%1.png").arg(index++).toStdString(), m);
+        }
     }
 
 	MainWindow *_ui;
@@ -89,7 +102,7 @@ private:
 	QImage           _image            ;
 	ImageMask        _mask             ;
 	QList<ImageMask> _undo_list        ;
-	bool             _undo             ;
+    //bool             _undo             ;
 	int              _undo_index       ;
     QPoint           _local_mouse_pos        ;
 	QString          _img_file         ;

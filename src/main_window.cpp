@@ -85,7 +85,7 @@ void MainWindow::closeCurrentTab() {
 
 void MainWindow::closeTab(int index) {
     ImageCanvas * ic = getImageCanvas(index);
-    if (ic == NULL)
+    if (ic == nullptr)
         throw std::logic_error("error index");
 
     if (ic->isNotSaved()) {
@@ -265,7 +265,7 @@ void MainWindow::updateConnect(ImageCanvas * ic) {
 
     connect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
     connect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
-    //connect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
+
 	connect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
 	connect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
 	connect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
@@ -278,7 +278,18 @@ void MainWindow::updateConnect(ImageCanvas * ic) {
 void MainWindow::allDisconnnect(ImageCanvas *ic) {
     if (ic == NULL) return;
 
-    disconnect(0, 0, ic, 0);
+    disconnect(spinbox_scale, QOverload<double>::of(&QDoubleSpinBox::valueChanged), ic, &ImageCanvas::scaleChanged);
+
+    disconnect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
+    disconnect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
+
+    disconnect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
+    disconnect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
+    disconnect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
+    disconnect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
+    disconnect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
+    disconnect(checkbox_border_ws, SIGNAL(clicked()), ic, SLOT(update()));
+
 }
 
 ImageCanvas * MainWindow::newImageCanvas() {

@@ -22,7 +22,7 @@ ImageCanvas::ImageCanvas(MainWindow *ui) :
 
     _undo_list.clear();
     _undo_index = 0;
-    _undo = false;
+    //_undo = false;
 
     _scroll_parent->setBackgroundRole(QPalette::Dark);
     _scroll_parent->setWidget(this);
@@ -202,20 +202,23 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
             repaint();
             return;
         }
+        if (_button_is_pressed)
+            addUndo();
+
 		_button_is_pressed = false;
 
-		if (_undo) {
-			QMutableListIterator<ImageMask> it(_undo_list);
-			int i = 0;
-			while (it.hasNext()) {
-				it.next();
-				if (i++ >= _undo_index)
-					it.remove();
-			}
-			_undo = false;
-			_ui->redo_action->setEnabled(false);
-        }
-        addUndo();
+//		if (_undo) {
+//			QMutableListIterator<ImageMask> it(_undo_list);
+//			int i = 0;
+//			while (it.hasNext()) {
+//				it.next();
+//				if (i++ >= _undo_index)
+//					it.remove();
+//			}
+//			_undo = false;
+//			_ui->redo_action->setEnabled(false);
+//        }
+
 
         _ui->setStarAtNameOfTab(true);
 		_ui->undo_action->setEnabled(true);
@@ -300,6 +303,7 @@ void ImageCanvas::clearMask() {
     //_watershed = ImageMask(_image.size());
     _undo_list.clear();
 	_undo_index = 0;
+    addUndo();
 	repaint();
 	
 }
@@ -437,10 +441,12 @@ void ImageCanvas::refresh() {
 
 
 void ImageCanvas::undo() {
-	_undo = true;
+
+    //_undo = true;
     _undo_index--;
+    qDebug() << "_undo_index" << _undo_index;
     if (_undo_index == 1) {
-        _mask = _undo_list.at(_undo_index - 1);
+        _mask = _undo_list.at(0);
 		_ui->undo_action->setEnabled(false);
 		refresh();
 	} else if (_undo_index > 1) {
