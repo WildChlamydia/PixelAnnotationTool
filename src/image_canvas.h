@@ -18,6 +18,7 @@ constexpr double ZOOM_MAX = 10.0;
 constexpr double FLOAT_DELTA = 0.000001;
 constexpr double ZOOM_TRESH = 1.0;
 constexpr double CARRY_SPEED = 1.2;
+constexpr int    MAX_UNDO_SIZE = 50;
 
 class ImageCanvas : public QLabel {
 	Q_OBJECT
@@ -38,7 +39,7 @@ public:
 	void updateMaskColor(const Id2Labels & labels) { _mask.updateColor(labels); }
 	void loadImage(const QString &file);
 	QScrollArea * getScrollParent() const { return _scroll_parent; }
-    bool isNotSaved() const { return _undo_list.size() > 1; }
+    bool isNotSaved() const { return !_is_saved; }
 
     double getScale() const;
 
@@ -65,17 +66,28 @@ public slots :
 private:
     bool eventFilter(QObject *target, QEvent *event) override;
 
+    void addUndo() {
+        if (_undo_list.size() >= MAX_UNDO_SIZE) {
+            _undo_list.pop_front();
+            --_undo_index;
+        }
+        _undo_list.push_back(_mask);
+        ++_undo_index;
+        _is_saved = false;
+    }
+
 	MainWindow *_ui;
 	
 	void _initPixmap();
 	void _drawFillCircle(QMouseEvent * e);
+
+    bool _is_saved = true;
 
 	QScrollArea     *_scroll_parent    ;
 	double           _scale            ;
 	double           _alpha            ;
 	QImage           _image            ;
 	ImageMask        _mask             ;
-	ImageMask        _watershed        ;
 	QList<ImageMask> _undo_list        ;
 	bool             _undo             ;
 	int              _undo_index       ;

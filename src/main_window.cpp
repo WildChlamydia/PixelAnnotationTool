@@ -15,6 +15,7 @@
 #include <QColorDialog>
 #include <QTextStream>
 #include <QSettings>
+
 //#include "pixel_annotation_tool_version.h"
 
 #include "about_dialog.h"
@@ -73,6 +74,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     _timer_autosave.start(AUTOSAVE_TIME_SECONDS * 1000);
     list_label->installEventFilter(this);
+    this->dockWidget_3->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 }
 
 void MainWindow::closeCurrentTab() {
@@ -93,13 +95,21 @@ void MainWindow::closeTab(int index) {
             ic->saveMask();
         }
     }
+
+    auto wid = tabWidget->widget(index);
+    wid->disconnect();
     tabWidget->removeTab(index);
+    allDisconnnect(ic);
     delete ic;
-    if (tabWidget->count() == 0 ) {
-        image_canvas = NULL;
+    ic = nullptr;
+    image_canvas = nullptr;
+
+    if (tabWidget->count() == 0) {
         list_label->setEnabled(false);
     } else {
-        image_canvas = getImageCanvas(std::min(index, tabWidget->count()-1));
+        auto i = std::min(index, tabWidget->count() - 1);
+        image_canvas = getImageCanvas(i);
+        tabWidget->widget(i)->setFocus(Qt::ActiveWindowFocusReason);
     }
 }
 
@@ -251,10 +261,7 @@ void MainWindow::updateConnect(ImageCanvas * ic) {
     if (ic == nullptr)
         return;
 
-    connect(spinbox_scale, QOverload<double>::of(&QDoubleSpinBox::valueChanged),
-            [=](double val){
-        ic->scaleChanged(val);
-    });
+    connect(spinbox_scale, QOverload<double>::of(&QDoubleSpinBox::valueChanged), ic, &ImageCanvas::scaleChanged);
 
     connect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
     connect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
@@ -268,18 +275,10 @@ void MainWindow::updateConnect(ImageCanvas * ic) {
     
 }
 
-void MainWindow::allDisconnnect(const ImageCanvas * ic) {
+void MainWindow::allDisconnnect(ImageCanvas *ic) {
     if (ic == NULL) return;
-    disconnect(spinbox_scale, SIGNAL(valueChanged(double)), ic, SLOT(scaleChanged(double)));
-    disconnect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
-    disconnect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
-    //disconnect(checkbox_watershed_mask, SIGNAL(clicked()), ic, SLOT(update()));
-    disconnect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
-    disconnect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
-    disconnect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
-    disconnect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
-    disconnect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
-    disconnect(checkbox_border_ws, SIGNAL(clicked()), ic, SLOT(update()));
+
+    disconnect(0, 0, ic, 0);
 }
 
 ImageCanvas * MainWindow::newImageCanvas() {

@@ -62,7 +62,7 @@ public:
 	QString currentDir() const;
 	QString currentFile() const;
     void updateConnect(ImageCanvas *ic);
-    void allDisconnnect(const ImageCanvas * ic);
+    void allDisconnnect(ImageCanvas *ic);
     void runWatershed(ImageCanvas * ic);
     void setStarAtNameOfTab(bool star);
     bool eventFilter(QObject *target, QEvent *event);

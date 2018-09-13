@@ -35,7 +35,9 @@ ImageCanvas::ImageCanvas(MainWindow *ui) :
 }
 
 ImageCanvas::~ImageCanvas() {
+    _scroll_parent->disconnect();
     _scroll_parent->deleteLater();
+    _scroll_parent = nullptr;
 }
 
 void ImageCanvas::_initPixmap() {
@@ -73,14 +75,14 @@ void ImageCanvas::loadImage(const QString &filename) {
 	} else {
 		clearMask();
 	}
-    _undo_list.push_back(_mask);
-    ++_undo_index;
+    addUndo();
 
     _ui->undo_action->setEnabled(true);
 	_ui->redo_action->setEnabled(false);
 
 	setPixmap(QPixmap::fromImage(_image));
-	resize(_scale *_image.size());
+    resize(_scale * _image.size());
+    _is_saved = true;
 }
 
 void ImageCanvas::saveMask() {
@@ -88,8 +90,8 @@ void ImageCanvas::saveMask() {
 		return;
 
 	_mask.id.save(_mask_file);
-	if (!_watershed.id.isNull()) {
-        QImage watershed = _watershed.id;
+    if (!_mask.id.isNull()) {
+        QImage watershed = _mask.id;
         if (!_ui->checkbox_border_ws->isChecked()) {
             watershed = removeBorder(_mask.id, _ui->id_labels);
         }
@@ -104,15 +106,23 @@ void ImageCanvas::saveMask() {
 	}
 
     _ui->setStarAtNameOfTab(false);
+    _is_saved = true;
 }
 
 void ImageCanvas::scaleChanged(double scale) {
+
     if (scale == 0.0) {
         return;
     }
-	_scale  = scale ;
-	resize(_scale * _image.size());
-	repaint();
+
+    auto size = _scale * _image.size();
+    if (!size.width() || !size.height()) {
+        return;
+    }
+
+    _scale  = scale;
+    resize(size);
+    //repaint();
 }
 
 void ImageCanvas::alphaChanged(double alpha) {
@@ -136,7 +146,6 @@ void ImageCanvas::paintEvent(QPaintEvent *event) {
 
     painter.drawImage(topleft, _image);
 	painter.setOpacity(_alpha);
-
     if (!_mask.id.isNull() && _ui->checkbox_manuel_mask->isChecked()) {
         painter.drawImage(topleft, _mask.color);
 	}
@@ -206,8 +215,7 @@ void ImageCanvas::mouseReleaseEvent(QMouseEvent * e) {
 			_undo = false;
 			_ui->redo_action->setEnabled(false);
         }
-		_undo_list.push_back(_mask);
-		_undo_index++;
+        addUndo();
 
         _ui->setStarAtNameOfTab(true);
 		_ui->undo_action->setEnabled(true);
@@ -251,8 +259,8 @@ void ImageCanvas::_drawFillCircle(QMouseEvent * e) {
 		int y = e->y() / _scale - _pen_size / 2;
         _mask.drawFillCircle(x, y, _pen_size, _color);
 	} else {
-		int x = (e->x()+0.5) / _scale ;
-		int y = (e->y()+0.5) / _scale ;
+        int x = (e->x() + 0.5) / _scale ;
+        int y = (e->y() + 0.5) / _scale ;
         _mask.drawPixel(x, y, _color);
 	}
 	update();
@@ -268,8 +276,7 @@ void ImageCanvas::replaceCurrentLabel(const LabelInfo &dst)
     cv::Mat temp_color_mat = qImage2Mat(_mask.color);
     cv::Mat temp_id_mat = qImage2Mat(_mask.id);
 
-    _undo_list.push_back(_mask);
-    _undo_index++;
+    addUndo();
 
     cv::Mat mask;
     auto src_color = cv::Scalar(_color.color.blue(), _color.color.green(), _color.color.red());
@@ -290,7 +297,7 @@ void ImageCanvas::replaceCurrentLabel(const LabelInfo &dst)
 
 void ImageCanvas::clearMask() {
     _mask = ImageMask(_image.size());
-    _watershed = ImageMask(_image.size());
+    //_watershed = ImageMask(_image.size());
     _undo_list.clear();
 	_undo_index = 0;
 	repaint();
@@ -359,6 +366,7 @@ bool ImageCanvas::eventFilter(QObject *target, QEvent *event)
             }
         }
     }
+    return false;
 }
 
 void ImageCanvas::wheelEvent(QWheelEvent *event) {
@@ -407,8 +415,8 @@ void ImageCanvas::setWatershedMask(QImage watershed) {
 
     idToColor(_mask.id, _ui->id_labels, &_mask.color);
 
-    _undo_list.push_back(_mask);
-    ++_undo_index;
+    addUndo();
+
 }
 
 void ImageCanvas::setMask(const ImageMask & mask) {
