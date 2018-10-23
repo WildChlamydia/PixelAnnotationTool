@@ -103,16 +103,6 @@ Name2Labels defaultLabels() {
     labels[QObject::tr("Person")                ] = LabelInfo(QObject::tr("Person"), "void" ,  13, 13, QColor(250, 0, 55));
     labels[QObject::tr("Animal")               ] = LabelInfo(QObject::tr("Animal"), "void" ,  14, 14, QColor(178, 20, 50));
     labels[QObject::tr("Vehicle")          ] = LabelInfo(QObject::tr("Vehicle"), "void" ,  15, 15, QColor(0, 30, 130));
-
-	//QVector<QColor> cmap = colorMap(labels.size());
-	//qDebug() << "cmlap size = " << cmap.size();
-	//QMapIterator<QString, LabelInfo> it(labels);
-	//int i = 0;
-	//while (it.hasNext()) {
-	//	it.next();
-	//	labels[it.key()].color = cmap[i++];
-	//}
-	//labels["unlabeled"].color = QColor(0, 0, 0);
 	
 	return labels;
 

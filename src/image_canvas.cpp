@@ -444,7 +444,6 @@ void ImageCanvas::undo() {
 
     //_undo = true;
     _undo_index--;
-    qDebug() << "_undo_index" << _undo_index;
     if (_undo_index == 1) {
         _mask = _undo_list.at(0);
 		_ui->undo_action->setEnabled(false);
