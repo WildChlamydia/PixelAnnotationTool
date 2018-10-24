@@ -236,7 +236,7 @@
        <item>
         <widget class="QCheckBox" name="checkbox_manuel_mask">
          <property name="text">
-          <string>Manuel Mask</string>
+          <string>Mask</string>
          </property>
          <property name="checkable">
           <bool>true</bool>

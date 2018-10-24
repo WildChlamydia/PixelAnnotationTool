@@ -88,21 +88,7 @@ Name2Labels defaultLabels() {
 	Name2Labels labels;
 
     labels[QObject::tr("Unlabeled")           ] = LabelInfo(QObject::tr("Unlabeled"), "void"         ,  0, 0, QColor(  0,  0,  0));
-    labels[QObject::tr("Debris")         ] = LabelInfo(QObject::tr("Debris"), "void"         ,  1, 1, QColor(58, 156, 147) );
-    labels[QObject::tr("Sky")] = LabelInfo(QObject::tr("Sky"), "void",  2, 2, QColor(0, 177, 247) );
-    labels[QObject::tr("Obstacle")          ] = LabelInfo(QObject::tr("Obstacle"), "void"         ,  3, 3, QColor(94, 30, 104) );
-    labels[QObject::tr("Ground")              ] = LabelInfo(QObject::tr("Ground"), "void"         ,  4, 4, QColor(191, 119, 56) );
-    labels[QObject::tr("Building")              ] = LabelInfo(QObject::tr("Building"), "void"         ,  5, 5, QColor(102, 102, 102) );
-    labels[QObject::tr("Road")             ] = LabelInfo(QObject::tr("Road"), "void"         ,  6, 6, QColor(182, 179, 182));
-    labels[QObject::tr("Pipe")              ] = LabelInfo(QObject::tr("Pipe"),              "void",  7, 7, QColor(243, 15, 190));
-    labels[QObject::tr("Building Material") ] = LabelInfo(QObject::tr("Building Material"), "void",  8, 8, QColor(230, 225, 54));
-    labels[QObject::tr("Big Vegetation")            ] = LabelInfo(QObject::tr("Big Vegetation"), "void",   9, 9, QColor(60, 112, 60));
-    labels[QObject::tr("Small Vegetation")             ] = LabelInfo(QObject::tr("Small Vegetation"), "void",   10, 10, QColor(146, 243, 146));
-    labels[QObject::tr("Manhole")          ] = LabelInfo(QObject::tr("Manhole"), "void"         ,  11, 11, QColor(122, 3, 51));
-    labels[QObject::tr("Water")            ] = LabelInfo(QObject::tr("Water"), "void" ,  12, 12, QColor(164, 216, 255));
-    labels[QObject::tr("Person")                ] = LabelInfo(QObject::tr("Person"), "void" ,  13, 13, QColor(250, 0, 55));
-    labels[QObject::tr("Animal")               ] = LabelInfo(QObject::tr("Animal"), "void" ,  14, 14, QColor(178, 20, 50));
-    labels[QObject::tr("Vehicle")          ] = LabelInfo(QObject::tr("Vehicle"), "void" ,  15, 15, QColor(0, 30, 130));
+    labels[QObject::tr("Atrium")         ] = LabelInfo(QObject::tr("Atrium"), "void"         ,  1, 1, QColor(255, 0, 0) );
 	
 	return labels;
 

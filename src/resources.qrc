@@ -4,7 +4,5 @@
         <file>exit.png</file>
         <file>open.png</file>
         <file>save.png</file>
-        <file>eng.qm</file>
-        <file>rus.qm</file>
     </qresource>
 </RCC>

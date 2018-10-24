@@ -59,14 +59,14 @@ void idToColor(const QImage &image_id, const Id2Labels& id_label, QImage *result
 
 QColor invColor(const QColor& color) {
 
-	int h, s, v;
-	color.getHsv(&h, &s, &v);
+    int h, s, v;
+    color.getHsv(&h, &s, &v);
     h = (h + 180) % 180;
     s = 255 - s;
     v = 255 - v;
-	QColor color_inv;
-	color_inv.setHsv(h, s, v);
-	return color_inv;
+    QColor color_inv;
+    color_inv.setHsv(h, s, v);
+    return color_inv;
 
 }
 

@@ -1,8 +1,3 @@
-/**
- * Image Annotation Tool for image annotations with pixelwise masks
- *
- * Author: Rudra Poudel
- */
 #include <QApplication>
 #include <QFile>
 #include "main_window.h"
@@ -21,10 +16,6 @@ int main(int argc, char *argv[])
 #endif
 
     QApplication app(argc, argv);
-
-    QTranslator qtTranslator;
-    qtTranslator.load("://rus.qm");
-    app.installTranslator(&qtTranslator);
 
 	MainWindow win;
     win.setWindowTitle("PixelAnnotationTool " + VERSION);
