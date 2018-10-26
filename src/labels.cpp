@@ -87,8 +87,22 @@ Id2Labels getId2Label(const Name2Labels& labels) {
 Name2Labels defaultLabels() {
 	Name2Labels labels;
 
-    labels[QObject::tr("Unlabeled")           ] = LabelInfo(QObject::tr("Unlabeled"), "void"         ,  0, 0, QColor(  0,  0,  0));
-    labels[QObject::tr("Atrium")         ] = LabelInfo(QObject::tr("Atrium"), "void"         ,  1, 1, QColor(255, 0, 0) );
+    labels[QObject::tr("Неразмечаемый")           ] = LabelInfo(QObject::tr("Неразмечаемый"), "void"         ,  0, 0, QColor(  0,  0,  0));
+        labels[QObject::tr("Небо")] = LabelInfo(QObject::tr("Небо"), "void",  1, 1, QColor(0, 177, 247) );
+        labels[QObject::tr("Песок")          ] = LabelInfo(QObject::tr("Песок"), "void"         ,  2, 2, QColor(94, 30, 104) );
+        labels[QObject::tr("Земля")              ] = LabelInfo(QObject::tr("Земля"), "void"         ,  3, 3, QColor(191, 119, 56) );
+        labels[QObject::tr("Постройка")              ] = LabelInfo(QObject::tr("Постройка"), "void"         ,  4, 4, QColor(102, 102, 102) );
+        labels[QObject::tr("Экскременты")             ] = LabelInfo(QObject::tr("Экскременты"), "void"         ,  5, 5, QColor(182, 179, 182));
+        labels[QObject::tr("Мячик")              ] = LabelInfo(QObject::tr("Мячик"),              "void",  6, 6, QColor(243, 15, 190));
+        labels[QObject::tr("Камень или скала") ] = LabelInfo(QObject::tr("Камень или скала"), "void",  7, 7, QColor(230, 225, 54));
+        labels[QObject::tr("Деревья и кусты")            ] = LabelInfo(QObject::tr("Деревья и кусты"), "void",   8, 8, QColor(40, 140, 40));
+        labels[QObject::tr("Подготовленная трава")             ] = LabelInfo(QObject::tr("Подготовленная трава"), "void",  9, 9, QColor(146, 243, 146));
+        labels[QObject::tr("Дикая трава")             ] = LabelInfo(QObject::tr("Дикая трава"), "void",   10, 10, QColor(10, 250, 30));
+        labels[QObject::tr("Лунка")          ] = LabelInfo(QObject::tr("Лунка"), "void"         ,  11, 11, QColor(122, 3, 51));
+        labels[QObject::tr("Вода")            ] = LabelInfo(QObject::tr("Вода"), "void" ,  12, 12, QColor(164, 216, 255));
+        labels[QObject::tr("Человек")                ] = LabelInfo(QObject::tr("Человек"), "void" ,  13, 13, QColor(250, 0, 55));
+        labels[QObject::tr("Животное")               ] = LabelInfo(QObject::tr("Животное"), "void" ,  14, 14, QColor(178, 20, 50));
+        labels[QObject::tr("Техника")          ] = LabelInfo(QObject::tr("Техника"), "void" ,  15, 15, QColor(0, 30, 130));
 	
 	return labels;
 
