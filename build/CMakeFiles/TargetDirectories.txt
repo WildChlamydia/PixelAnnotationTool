@@ -1,0 +1,7 @@
+E:/Projects/PixelAnnotationTool/build/CMakeFiles/gen_qrc.dir
+E:/Projects/PixelAnnotationTool/build/CMakeFiles/edit_cache.dir
+E:/Projects/PixelAnnotationTool/build/CMakeFiles/PixelAnnotationTool.dir
+E:/Projects/PixelAnnotationTool/build/CMakeFiles/upload_file.dir
+E:/Projects/PixelAnnotationTool/build/CMakeFiles/make_zip.dir
+E:/Projects/PixelAnnotationTool/build/CMakeFiles/rebuild_cache.dir
+E:/Projects/PixelAnnotationTool/build/CMakeFiles/PixelAnnotationTool_autogen.dir

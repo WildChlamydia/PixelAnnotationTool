@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CodeBlocks_project_file>
+	<FileVersion major="1" minor="6"/>
+	<Project>
+		<Option title="PixelAnnotationTool"/>
+		<Option makefile_is_custom="1"/>
+		<Option compiler="msvc8"/>
+		<Option virtualFolders="CMake Files\;CMake Files\..\;CMake Files\..\..\;CMake Files\..\..\Development\;CMake Files\..\..\Development\Qt5.7_VS15\;CMake Files\..\..\Development\Qt5.7_VS15\5.7\;CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\;CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\;CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\;CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Widgets\;CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\;CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Core\;CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5LinguistTools\;CMake Files\..\..\Development\opencv\;CMake Files\..\..\Development\opencv\build\;CMake Files\src\;"/>
+		<Build>
+			<Target title="all">
+				<Option working_dir="E:/Projects/PixelAnnotationTool/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 all"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="gen_qrc">
+				<Option working_dir="E:/Projects/PixelAnnotationTool/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 gen_qrc"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="edit_cache">
+				<Option working_dir="E:/Projects/PixelAnnotationTool/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 edit_cache"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PixelAnnotationTool">
+				<Option output="E:/Projects/PixelAnnotationTool/build/PixelAnnotationTool_x86_v/PixelAnnotationTool.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="E:/Projects/PixelAnnotationTool/build"/>
+				<Option object_output="./"/>
+				<Option type="0"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add option="-DQT_GUI_LIB"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add option="-DQT_NO_DEBUG"/>
+					<Add option="-DQT_WIDGETS_LIB"/>
+					<Add directory="E:/Projects/PixelAnnotationTool/build"/>
+					<Add directory="E:/Projects/PixelAnnotationTool"/>
+					<Add directory="E:/Projects/PixelAnnotationTool/build/PixelAnnotationTool_autogen/include"/>
+					<Add directory="E:/Development/opencv/build"/>
+					<Add directory="E:/Development/opencv/sources/include"/>
+					<Add directory="E:/Development/opencv/sources/include/opencv"/>
+					<Add directory="E:/Development/opencv/sources/modules/core/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/flann/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/imgproc/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/ml/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/photo/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/video/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/imgcodecs/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/shape/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/videoio/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/highgui/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/objdetect/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/superres/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/ts/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/features2d/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/calib3d/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/stitching/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/videostab/include"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/include"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/include/QtGui"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/include/QtCore"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/./mkspecs/win32-msvc2015"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/include/QtWidgets"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt"/>
+					<Add directory="E:\Development\gstreamer\1.0\x86\include\gstreamer-1.0"/>
+					<Add directory="E:\Development\gstreamer\1.0\x86\include\"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 PixelAnnotationTool"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PixelAnnotationTool/fast">
+				<Option output="E:/Projects/PixelAnnotationTool/build/PixelAnnotationTool_x86_v/PixelAnnotationTool.exe" prefix_auto="0" extension_auto="0"/>
+				<Option working_dir="E:/Projects/PixelAnnotationTool/build"/>
+				<Option object_output="./"/>
+				<Option type="0"/>
+				<Option compiler="msvc8"/>
+				<Compiler>
+					<Add option="-DQT_GUI_LIB"/>
+					<Add option="-DQT_CORE_LIB"/>
+					<Add option="-DQT_NO_DEBUG"/>
+					<Add option="-DQT_WIDGETS_LIB"/>
+					<Add directory="E:/Projects/PixelAnnotationTool/build"/>
+					<Add directory="E:/Projects/PixelAnnotationTool"/>
+					<Add directory="E:/Projects/PixelAnnotationTool/build/PixelAnnotationTool_autogen/include"/>
+					<Add directory="E:/Development/opencv/build"/>
+					<Add directory="E:/Development/opencv/sources/include"/>
+					<Add directory="E:/Development/opencv/sources/include/opencv"/>
+					<Add directory="E:/Development/opencv/sources/modules/core/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/flann/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/imgproc/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/ml/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/photo/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/video/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/imgcodecs/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/shape/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/videoio/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/highgui/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/objdetect/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/superres/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/ts/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/features2d/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/calib3d/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/stitching/include"/>
+					<Add directory="E:/Development/opencv/sources/modules/videostab/include"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/include"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/include/QtGui"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/include/QtCore"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/./mkspecs/win32-msvc2015"/>
+					<Add directory="E:/Development/Qt5.7_VS15/5.7/msvc2015/include/QtWidgets"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\INCLUDE"/>
+					<Add directory="C:\Program Files (x86)\Microsoft Visual Studio 14.0\VC\ATLMFC\INCLUDE"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\ucrt"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\shared"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\um"/>
+					<Add directory="C:\Program Files (x86)\Windows Kits\10\include\10.0.17134.0\winrt"/>
+					<Add directory="E:\Development\gstreamer\1.0\x86\include\gstreamer-1.0"/>
+					<Add directory="E:\Development\gstreamer\1.0\x86\include\"/>
+				</Compiler>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 PixelAnnotationTool/fast"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="upload_file">
+				<Option working_dir="E:/Projects/PixelAnnotationTool/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 upload_file"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="make_zip">
+				<Option working_dir="E:/Projects/PixelAnnotationTool/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 make_zip"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="rebuild_cache">
+				<Option working_dir="E:/Projects/PixelAnnotationTool/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 rebuild_cache"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+			<Target title="PixelAnnotationTool_autogen">
+				<Option working_dir="E:/Projects/PixelAnnotationTool/build"/>
+				<Option type="4"/>
+				<MakeCommands>
+					<Build command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 PixelAnnotationTool_autogen"/>
+					<CompileFile command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 &quot;$file&quot;"/>
+					<Clean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+					<DistClean command="nmake /NOLOGO /f E:\Projects\PixelAnnotationTool\build\Makefile VERBOSE=1 clean"/>
+				</MakeCommands>
+			</Target>
+		</Build>
+		<Unit filename="E:/Projects/PixelAnnotationTool/build/PixelAnnotationTool_autogen/mocs_compilation.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/build/qrc_resources.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/build/ui_main_window.h">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/icon.rc">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/about_dialog.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/about_dialog.h">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/image_canvas.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/image_canvas.h">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/image_mask.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/image_mask.h">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/label_widget.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/label_widget.h">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/labels.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/labels.h">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/main.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/main_window.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/main_window.h">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/main_window.ui">
+			<Option target="PixelAnnotationTool"/>
+			<Option target="PixelAnnotationTool_autogen"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/resources.qrc">
+			<Option target="gen_qrc"/>
+			<Option target="PixelAnnotationTool"/>
+			<Option target="PixelAnnotationTool_autogen"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/utils.cpp">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/utils.h">
+			<Option target="PixelAnnotationTool"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/CMakeLists.txt">
+			<Option virtualFolder="CMake Files\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Widgets/Qt5WidgetsConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Widgets/Qt5WidgetsConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Widgets/Qt5WidgetsConfigExtras.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Widgets/Qt5WidgetsMacros.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Widgets/Qt5WidgetsConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Widgets/Qt5WidgetsConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Widgets\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5GuiConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5GuiConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QDDSPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QGifPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QICNSPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QICOPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QJpegPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QMinimalIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QOffscreenIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QTgaPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QTiffPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QTuioTouchPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QWbmpPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QWebpPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5Gui_QWindowsIntegrationPlugin.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5GuiConfigExtras.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5GuiConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Gui/Qt5GuiConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Gui\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Core/Qt5CoreConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Core/Qt5CoreConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Core/Qt5CoreConfigExtras.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Core/Qt5CoreConfigExtrasMkspecDir.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5Core/Qt5CoreMacros.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5Core\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5LinguistTools/Qt5LinguistToolsConfigVersion.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5LinguistTools\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5LinguistTools/Qt5LinguistToolsConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5LinguistTools\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/Qt5.7_VS15/5.7/msvc2015/lib/cmake/Qt5LinguistTools/Qt5LinguistToolsMacros.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\Qt5.7_VS15\5.7\msvc2015\lib\cmake\Qt5LinguistTools\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/opencv/build/OpenCVConfig-version.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\opencv\build\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/opencv/build/OpenCVConfig.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\opencv\build\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/../../Development/opencv/build/OpenCVModules.cmake">
+			<Option virtualFolder="CMake Files\..\..\Development\opencv\build\"/>
+		</Unit>
+		<Unit filename="E:/Projects/PixelAnnotationTool/src/resources.qrc">
+			<Option virtualFolder="CMake Files\src\"/>
+		</Unit>
+	</Project>
+</CodeBlocks_project_file>

@@ -62,7 +62,7 @@ void ImageCanvas::loadImage(const QString &filename) {
 
  	_image = mat2QImage(cv::imread(_img_file.toLocal8Bit().toStdString()));
 	
-	_mask_file = file.dir().absolutePath()+ "/" + file.baseName() + "_mask.png";
+    _mask_file = file.dir().absolutePath()+ "/" + file.baseName() + "_color_mask.png";
     //_watershed_file = file.dir().absolutePath()+ "/" + file.baseName() + "_watershed_mask.png";
 
     //_watershed = ImageMask(_image.size());
@@ -89,7 +89,7 @@ void ImageCanvas::saveMask() {
 	if (isFullZero(_mask.id))
 		return;
 
-	_mask.id.save(_mask_file);
+    //_mask.id.save(_mask_file);
     if (!_mask.id.isNull()) {
         QImage watershed = _mask.id;
         if (!_ui->checkbox_border_ws->isChecked()) {
@@ -97,12 +97,10 @@ void ImageCanvas::saveMask() {
         }
 
         //watershed.save(_watershed_file);
-		QFileInfo file(_img_file);
-		QString color_file = file.dir().absolutePath() + "/" + file.baseName() + "_color_mask.png";
         QImage colored = idToColor(watershed, _ui->id_labels);
 
         cv::Mat temp = qImage2Mat(colored);
-        cv::imwrite(color_file.toLocal8Bit().toStdString(), temp);
+        cv::imwrite(_mask_file.toLocal8Bit().toStdString(), temp);
 	}
 
     _ui->setStarAtNameOfTab(false);
