@@ -12,6 +12,19 @@ Example :
 
 ----------
 
+Versions:
+
+
+**1.3beta**
+
+* Added ability to load and save JSON with labels again.
+* Last loaded JSON will be saved and automatically loaded on start.
+* Segmentation saves and loads from color mask only, no ID mask used.
+* You can navigate images with Q and E (previous and next image), even if multiply directories opened.
+
+----------
+
+
 ### Building Dependencies :
 * [Qt](https://www.qt.io/download-open-source/)  >= 5.x
 * [CMake](https://cmake.org/download/) >= 2.8.x 
