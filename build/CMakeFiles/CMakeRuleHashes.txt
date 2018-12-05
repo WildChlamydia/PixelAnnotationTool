@@ -1,7 +1,0 @@
-# Hashes of file build rules.
-5f73b24ac80978dce38e957e07a192ca CMakeFiles/PixelAnnotationTool_autogen
-f5bf6b76dba874bf405f88ddf571bbb7 CMakeFiles/gen_qrc
-1ec2d25fb477c7bcfb445fbaf8f9c950 CMakeFiles/make_zip
-1b63c67b04a4a9ecb8ba87ff69ed5ee7 CMakeFiles/upload_file
-63ea368e8950627923d1fca1b08f9c21 qrc_resources.cpp
-99013735f58f295c5808c2a56583ee83 ui_main_window.h

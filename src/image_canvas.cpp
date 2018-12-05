@@ -1,4 +1,4 @@
-
+﻿
 #include "image_canvas.h"
 #include "main_window.h"
 
@@ -52,6 +52,7 @@ void ImageCanvas::_initPixmap() {
 	setPixmap(newPixmap);
 }
 
+#include <iostream>
 void ImageCanvas::loadImage(const QString &filename) {
 	if (!_image.isNull() )
 		saveMask();
@@ -66,37 +67,35 @@ void ImageCanvas::loadImage(const QString &filename) {
 
 	_undo_list.clear();
 	_undo_index = 0;
+
 	if (QFile(_mask_file).exists()) {
         _mask = ImageMask(_mask_file, _ui->id_labels);
 		_ui->checkbox_manuel_mask->setChecked(true);
 	} else {
 		clearMask();
 	}
+
     addUndo();
 
     _ui->undo_action->setEnabled(true);
 	_ui->redo_action->setEnabled(false);
 
-	setPixmap(QPixmap::fromImage(_image));
+
+    setPixmap(QPixmap::fromImage(_image));
+
     resize(_scale * _image.size());
+
+    cv::Mat tmp = qImage2Mat(_mask.id);
+
     _is_saved = true;
 }
 
 void ImageCanvas::saveMask() {
 	if (isFullZero(_mask.id))
-		return;
+        return;
 
-    //_mask.id.save(_mask_file);
     if (!_mask.id.isNull()) {
-        QImage watershed = _mask.id;
-        if (!_ui->checkbox_border_ws->isChecked()) {
-            watershed = removeBorder(_mask.id, _ui->id_labels);
-        }
-
-        //watershed.save(_watershed_file);
-        QImage colored = idToColor(watershed, _ui->id_labels);
-
-        cv::Mat temp = qImage2Mat(colored);
+        cv::Mat temp = qImage2Mat(_mask.color);
         cv::imwrite(_mask_file.toLocal8Bit().toStdString(), temp);
 	}
 

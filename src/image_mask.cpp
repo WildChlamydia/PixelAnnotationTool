@@ -8,7 +8,7 @@ ImageMask::ImageMask() {
 }
 
 ImageMask::ImageMask(const QString &file, Id2Labels id_labels) {
-    cv::Mat col_img = cv::imread(file.toLocal8Bit().toStdString());
+    cv::Mat col_img = cv::imread(file.toLocal8Bit().toStdString(), cv::IMREAD_UNCHANGED);
 
     cv::Mat t_id(col_img.rows, col_img.cols, col_img.type(), cv::Scalar(0, 0, 0));
 
@@ -19,7 +19,7 @@ ImageMask::ImageMask(const QString &file, Id2Labels id_labels) {
         t_id.setTo(cv::Scalar(label->id, label->id, label->id), mask);
     }
 
-    id = QImage((const uchar *)t_id.data, t_id.cols, t_id.rows, int(t_id.step), QImage::Format_RGB888);
+    id = mat2QImage(t_id);
     color = mat2QImage(col_img);
 }
 

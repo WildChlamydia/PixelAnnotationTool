@@ -2,12 +2,12 @@
 #include <QDebug>
 //-------------------------------------------------------------------------------------------------------------
 QImage mat2QImage(cv::Mat const& src) {
-	cv::Mat temp; // make the same cv::Mat
-	cv::cvtColor(src, temp, CV_BGR2RGB); // cvtColor Makes a copt, that what i need
-	QImage dest((const uchar *)temp.data, temp.cols, temp.rows,int(temp.step), QImage::Format_RGB888);
-	dest.bits(); // enforce deep copy, see documentation 
-				 // of QImage::QImage ( const uchar * data, int width, int height, Format format )
-	return dest;
+    cv::Mat temp; // make the same cv::Mat
+    cv::cvtColor(src, temp, CV_BGR2RGB); // cvtColor Makes a copt, that what i need
+    QImage dest((const uchar *)temp.data, temp.cols, temp.rows,int(temp.step), QImage::Format_RGB888);
+    dest.bits(); // enforce deep copy, see documentation
+                 // of QImage::QImage ( const uchar * data, int width, int height, Format format )
+    return dest;
 }
 cv::Mat qImage2Mat(QImage const& src) {
 	cv::Mat tmp(src.height(), src.width(), CV_8UC3, (uchar*)src.bits(), src.bytesPerLine());
