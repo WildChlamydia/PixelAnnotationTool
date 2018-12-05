@@ -63,14 +63,11 @@ void ImageCanvas::loadImage(const QString &filename) {
  	_image = mat2QImage(cv::imread(_img_file.toLocal8Bit().toStdString()));
 	
     _mask_file = file.dir().absolutePath()+ "/" + file.baseName() + "_color_mask.png";
-    //_watershed_file = file.dir().absolutePath()+ "/" + file.baseName() + "_watershed_mask.png";
 
-    //_watershed = ImageMask(_image.size());
 	_undo_list.clear();
 	_undo_index = 0;
 	if (QFile(_mask_file).exists()) {
         _mask = ImageMask(_mask_file, _ui->id_labels);
-        //_ui->runWatershed(this);// button_watershed->released());
 		_ui->checkbox_manuel_mask->setChecked(true);
 	} else {
 		clearMask();

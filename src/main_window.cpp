@@ -1,4 +1,4 @@
-#include "main_window.h"
+﻿#include "main_window.h"
 #include "utils.h"
 #include <QException>
 #include <QDebug>
@@ -26,7 +26,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	setupUi(this);
 
 	list_label->setSpacing(1);
-    image_canvas = NULL;
+    image_canvas = nullptr;
 	save_action = new QAction(tr("&Save current image"), this);
     save_action->setIcon(QIcon(":/save.png"));
     close_tab_action = new QAction(tr("&Close current tab"), this);
@@ -34,7 +34,14 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	redo_action = new QAction(tr("&Redo"), this);
 	undo_action->setShortcuts(QKeySequence::Undo);
 	redo_action->setShortcuts(QKeySequence::Redo);
-	save_action->setShortcut(Qt::CTRL+Qt::Key_S);
+
+    next_image_action = new QAction(tr("Next image"), this);
+    next_image_action->setShortcuts({QKeySequence("E")});
+
+    prev_image_action = new QAction(tr("Previous image"), this);
+    prev_image_action->setShortcuts({QKeySequence("Q")});
+
+    save_action->setShortcut(Qt::CTRL + Qt::Key_S);
     close_tab_action->setShortcut(Qt::CTRL + Qt::Key_W);
 	undo_action->setEnabled(false);
 	redo_action->setEnabled(false);
@@ -42,15 +49,26 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 	menuFile->addAction(save_action);
     menuFile->addSeparator();
     menuFile->addAction(this->actionQuit);
+    menuFile->addSeparator();
+    menuFile->addAction(actionOpen_config_file);
+    menuFile->addAction(actionSave_config_file);
+
     menuEdit->addAction(close_tab_action);
 	menuEdit->addAction(undo_action);
 	menuEdit->addAction(redo_action);
+    menuEdit->addSeparator();
+    menuEdit->addAction(next_image_action);
+    menuEdit->addAction(prev_image_action);
 
     this->checkbox_border_ws->setVisible(false);
 
 	tabWidget->clear();
     
 	connect(button_watershed      , SIGNAL(released())                        , this, SLOT(runWatershed()  ));
+
+    connect(next_image_action      , SIGNAL(triggered())                        , this, SLOT(pickNextImage()  ));
+    connect(prev_image_action      , SIGNAL(triggered())                        , this, SLOT(pickPrevImage()  ));
+
 	connect(actionOpen_config_file, SIGNAL(triggered())                       , this, SLOT(loadConfigFile()));
 	connect(actionSave_config_file, SIGNAL(triggered())                       , this, SLOT(saveConfigFile()));
     connect(close_tab_action      , SIGNAL(triggered())                       , this, SLOT(closeCurrentTab()));
@@ -62,7 +80,8 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
 	loadConfigLabels();
 
-    connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)), this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
+    connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
+            this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
 
     list_label->setEnabled(false);
     openDirectory();
@@ -75,6 +94,15 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     _timer_autosave.start(AUTOSAVE_TIME_SECONDS * 1000);
     list_label->installEventFilter(this);
     this->dockWidget_3->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
+
+    QSettings settings("Home", "PixelAnnotation");
+    QString file = settings.value("last_json").toString();
+
+    if (file.isEmpty() || !QFile::exists(file)) {
+        file = QDir::currentPath() + "/golf.json";
+    }
+
+    loadJSON(file);
 }
 
 void MainWindow::closeCurrentTab() {
@@ -257,6 +285,61 @@ void MainWindow::autosave()
     image_canvas->saveMask();
 }
 
+void MainWindow::pickNextImage() {
+    const auto tuple = getCurrentItemIndecies();
+
+    int current_parent_index = std::get<0>(tuple);
+    int current_child_index = std::get<1>(tuple);
+
+    if ((current_child_index + 1) >= tree_widget_img->topLevelItem(current_parent_index)->childCount()) {
+        if ((current_parent_index + 1) >= tree_widget_img->topLevelItemCount()) {
+            QMessageBox::information(this, "No more images", "There is no next image! Well done");
+            return;
+        } else {
+            if (!tree_widget_img->topLevelItem(current_parent_index + 1)->childCount()) {
+                QMessageBox::information(this, "No more images", "There is no next image! Well done");
+                return;
+            }
+            current_parent_index += 1;
+            current_child_index = 0;
+        }
+    } else {
+        current_child_index += 1;
+    }
+
+    closeCurrentTab();
+    auto item = tree_widget_img->topLevelItem(current_parent_index)->child(current_child_index);
+    tree_widget_img->setCurrentItem(item);
+}
+
+void MainWindow::pickPrevImage()
+{
+    const auto tuple = getCurrentItemIndecies();
+
+    int current_parent_index = std::get<0>(tuple);
+    int current_child_index = std::get<1>(tuple);
+
+    if ((current_child_index - 1) < 0) {
+        if ((current_parent_index - 1) < 0) {
+            QMessageBox::information(this, "No more images", "There is no previous image! Well done");
+            return;
+        } else {
+            if (!tree_widget_img->topLevelItem(current_parent_index + 1)->childCount()) {
+                QMessageBox::information(this, "No more images", "There is no previous image! Well done");
+                return;
+            }
+            current_parent_index -= 1;
+            current_child_index = 0;
+        }
+    } else {
+        current_child_index -= 1;
+    }
+
+    closeCurrentTab();
+    auto item = tree_widget_img->topLevelItem(current_parent_index)->child(current_child_index);
+    tree_widget_img->setCurrentItem(item);
+}
+
 void MainWindow::updateConnect(ImageCanvas * ic) {
     if (ic == nullptr)
         return;
@@ -405,6 +488,62 @@ void MainWindow::openDirectory()
     }
 }
 
+std::tuple<int, int> MainWindow::getCurrentItemIndecies()
+{
+    const QString current_file = currentFile();
+    const QString current_dir = currentDir();
+
+    int current_parent_index = -1;
+    int current_child_index = -1;
+
+    // find parent index
+    for (int index = 0; index < tree_widget_img->topLevelItemCount(); ++index) {
+        auto current_item = tree_widget_img->topLevelItem(index);
+        auto current_text = current_item->text(0);
+
+        if (current_text == current_dir) {
+            current_parent_index = index;
+
+            // find child index
+            for (int child_index = 0; child_index < current_item->childCount(); ++child_index) {
+                auto child_item = current_item->child(child_index);
+                auto child_text = child_item->text(0);
+                if (child_text == current_file) {
+                    current_child_index = child_index;
+                    break;
+                }
+            }
+
+            break;
+        }
+    }
+
+    return std::tuple<int, int>(current_parent_index, current_child_index);
+}
+
+void MainWindow::loadJSON(const QString &file)
+{
+    QFile open_file(file);
+    if (!open_file.open(QIODevice::ReadOnly)) {
+        qWarning("Couldn't open save file.");
+        return;
+    }
+
+    QJsonObject object;
+    QByteArray saveData = open_file.readAll();
+    QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
+
+    labels.clear();
+    labels.read(loadDoc.object());
+    open_file.close();
+
+    QSettings settings("Home", "PixelAnnotation");
+    settings.setValue("last_json", file);
+
+    loadConfigLabels();
+    update();
+}
+
 void MainWindow::on_actionOpenDir_triggered() {
     //statusBar()->clearMessage();
 
@@ -413,6 +552,11 @@ void MainWindow::on_actionOpenDir_triggered() {
     QString openedDir = QFileDialog::getExistingDirectory(this, "Choose a directory to be read in", curr_open_dir);
 	if (openedDir.isEmpty())
 		return;
+
+    if (curr_open_dir == openedDir) {
+        QMessageBox::information(this, "Already opened", "This directory is alread opened!");
+        return;
+    }
 
 	curr_open_dir = openedDir;
     settings.setValue("last_opened_dir", curr_open_dir);
@@ -437,22 +581,9 @@ void MainWindow::saveConfigFile() {
 }
 
 void MainWindow::loadConfigFile() {
-	QString file = QFileDialog::getOpenFileName(this, tr("Open Config File"), QString(), tr("JSon file (*.json)"));
-	QFile open_file(file);
-	if (!open_file.open(QIODevice::ReadOnly)) {
-		qWarning("Couldn't open save file.");
-		return;
-	}
-	QJsonObject object;
-	QByteArray saveData = open_file.readAll();
-	QJsonDocument loadDoc(QJsonDocument::fromJson(saveData));
 
-	labels.clear();
-	labels.read(loadDoc.object());
-	open_file.close();
-
-	loadConfigLabels();
-    update();
+    QString file = QFileDialog::getOpenFileName(this, tr("Open Config File"), QString(), tr("JSon file (*.json)"));
+    loadJSON(file);
 
 }
 

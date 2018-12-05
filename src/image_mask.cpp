@@ -3,24 +3,26 @@
 
 #include <QPainter>
 
-ImageMask::ImageMask() {}
+ImageMask::ImageMask() {
+
+}
+
 ImageMask::ImageMask(const QString &file, Id2Labels id_labels) {
     cv::Mat col_img = cv::imread(file.toLocal8Bit().toStdString());
 
-    cv::Mat t_id;
-    col_img.copyTo(t_id);
+    cv::Mat t_id(col_img.rows, col_img.cols, col_img.type(), cv::Scalar(0, 0, 0));
 
+    cv::Mat mask;
     for (auto label : id_labels.values() ) {
-        cv::Mat mask;
         cv::Scalar col(label->color.blue(), label->color.green(), label->color.red());
         cv::inRange(col_img, col, col, mask);
         t_id.setTo(cv::Scalar(label->id, label->id, label->id), mask);
     }
 
     id = QImage((const uchar *)t_id.data, t_id.cols, t_id.rows, int(t_id.step), QImage::Format_RGB888);
-
-    color = idToColor(id, id_labels);
+    color = mat2QImage(col_img);
 }
+
 ImageMask::ImageMask(QSize s) {
     id = QImage(s, QImage::Format_RGB888);
     color = QImage(s, QImage::Format_RGB888);

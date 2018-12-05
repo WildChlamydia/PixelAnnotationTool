@@ -4,7 +4,9 @@ project(PixelAnnotationTool)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 if(WIN32)
-  # Steup yours
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
+
+  # Setup yours
   set(CMAKE_PREFIX_PATH E:\\Development\\Qt5.7_VS15\\5.7\\msvc2015)
   set(OpenCV_DIR E:\\Development\\opencv\\build)
 
@@ -40,11 +42,13 @@ if (UNIX)
 
   MESSAGE ("Build with maximum optimization for release")
   set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  set(CMAKE_CXX_STANDARD 14)
   set(CMAKE_CXX_FLAGS_DEBUG "-g")
   set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)
 endif (UNIX)
 set(CMAKE_AUTOMOC ON)
-set (CMAKE_CXX_STANDARD 14)
+
+
 
 if(WIN32)
 	if(CMAKE_CL_64)

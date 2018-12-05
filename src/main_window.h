@@ -25,9 +25,9 @@
 #include "label_widget.h"
 #include "labels.h"
 
-constexpr ushort AUTOSAVE_TIME_SECONDS = 10;
+constexpr ushort AUTOSAVE_TIME_SECONDS = 180;
 
-const QString VERSION = "v1.2stable";
+const QString VERSION = "v1.3beta";
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT
@@ -45,6 +45,10 @@ private:
     void openDirectory();
     QTimer _timer_autosave;
 
+    std::tuple<int, int> getCurrentItemIndecies();
+
+    void loadJSON(const QString& file);
+
 public:
 	ImageCanvas   *  image_canvas ;
     //std::vector<ImageCanvas*> _image_canvas;
@@ -56,6 +60,10 @@ public:
     QAction        * close_tab_action;
 	QAction        * undo_action  ;
 	QAction        * redo_action  ;
+
+    QAction        * next_image_action  ;
+    QAction        * prev_image_action  ;
+
     QString          curr_open_dir;
 
 public:
@@ -70,6 +78,10 @@ public:
 public slots:
 
     void autosave();
+
+    void pickNextImage();
+    void pickPrevImage();
+
 	void changeLabel(QListWidgetItem*, QListWidgetItem*);
     void changeColor(QListWidgetItem *item);
 	void saveConfigFile();
