@@ -1,0 +1,37 @@
+{
+    "labels": {
+        "Unlabeled": {
+            "categorie": "void",
+            "color": [
+                0,
+                0,
+                0
+            ],
+            "id": 0,
+            "id_categorie": 0,
+            "name": "Unlabeled"
+        },
+		"Atrium": {
+            "categorie": "void",
+            "color": [
+                255,
+                0,
+                0
+            ],
+            "id": 1,
+            "id_categorie": 1,
+            "name": "Atrium"
+        },
+		"Valve points": {
+            "categorie": "void",
+            "color": [
+                0,
+                0,
+                255
+            ],
+            "id": 2,
+            "id_categorie": 2,
+            "name": "Valve points"
+        }
+    }
+}

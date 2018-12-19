@@ -439,12 +439,21 @@ void MainWindow::treeWidgetClicked() {
 
     QString iFile = currentFile();
     QString iDir = currentDir();
+    auto * old_canvas = image_canvas;
     if (iFile.isEmpty() || iDir.isEmpty())
         return;
+
     allDisconnnect(image_canvas);
+
     int index = getImageCanvas(iFile, image_canvas);
+
     updateConnect(image_canvas);
     tabWidget->setCurrentIndex(index);
+
+    if (old_canvas) {
+        image_canvas->setSizePen(old_canvas->getPenSize());
+        image_canvas->setId(old_canvas->getId());
+    }
 
 }
 

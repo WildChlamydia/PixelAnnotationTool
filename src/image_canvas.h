@@ -45,6 +45,10 @@ public:
 
     void replaceCurrentLabel(const LabelInfo& dst);
 
+    int getPenSize() const;
+
+    int getId() const;
+
 protected:
     void mouseMoveEvent(QMouseEvent * event) override;
 	void mousePressEvent(QMouseEvent * event) override;
@@ -96,6 +100,7 @@ private:
 
     bool _is_saved = true;
 
+    int _id = 0;
 	QScrollArea     *_scroll_parent    ;
 	double           _scale            ;
 	double           _alpha            ;

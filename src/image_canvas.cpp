@@ -263,6 +263,16 @@ void ImageCanvas::_drawFillCircle(QMouseEvent * e) {
 	update();
 }
 
+int ImageCanvas::getId() const
+{
+    return _id;
+}
+
+int ImageCanvas::getPenSize() const
+{
+    return _pen_size;
+}
+
 double ImageCanvas::getScale() const
 {
     return _scale;
@@ -422,6 +432,7 @@ void ImageCanvas::setMask(const ImageMask & mask) {
 }
 
 void ImageCanvas::setId(int id) {
+    _id = id;
 	_color.id = QColor(id, id, id);
 	_color.color = _ui->id_labels[id]->color;
 }
