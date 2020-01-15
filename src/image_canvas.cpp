@@ -4,6 +4,7 @@
 
 #include <QtDebug>
 #include <QtWidgets>
+#include <iostream>
 
 ImageCanvas::ImageCanvas(MainWindow *ui) :
     QLabel() ,
@@ -52,7 +53,7 @@ void ImageCanvas::_initPixmap() {
 	setPixmap(newPixmap);
 }
 
-#include <iostream>
+
 void ImageCanvas::loadImage(const QString &filename) {
 	if (!_image.isNull() )
 		saveMask();

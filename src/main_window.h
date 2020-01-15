@@ -25,6 +25,8 @@
 #include "label_widget.h"
 #include "labels.h"
 
+#include "tfwrapper/tensorflow_segmentator.hpp"
+
 constexpr ushort AUTOSAVE_TIME_SECONDS = 180;
 
 const QString VERSION = "v1.3beta";
@@ -48,6 +50,8 @@ private:
     std::tuple<int, int> getCurrentItemIndecies();
 
     void loadJSON(const QString& file);
+
+    TensorflowSegmentator *segmentator = nullptr;
 
 public:
 	ImageCanvas   *  image_canvas ;
@@ -96,6 +100,9 @@ public slots:
 	void updateConnect(int index);
     void treeWidgetClicked();
 
+private slots:
+    void on_button_NeuralNetwork_clicked();
+    void on_actionLoad_network_pb_triggered();
 };
 
 #endif

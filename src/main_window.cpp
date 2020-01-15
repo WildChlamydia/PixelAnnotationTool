@@ -601,3 +601,22 @@ void MainWindow::on_actionAbout_triggered() {
 	d->setModal(true);
 	d->show();
 }
+
+void MainWindow::on_button_NeuralNetwork_clicked()
+{
+    if (!segmentator) {
+        QMessageBox::critical(this, "Not network loaded", "Please, load network in Tools first");
+        return;
+    }
+}
+
+void MainWindow::on_actionLoad_network_pb_triggered()
+{
+    QString filename = QFileDialog::getOpenFileName(this, "Choose network model", QDir::current().path(), "(*.pb)");
+    if (filename.isEmpty()) return;
+
+    if (segmentator) delete segmentator;
+
+    segmentator = new TensorflowSegmentator;
+    segmentator->load(filename.toStdString());
+}

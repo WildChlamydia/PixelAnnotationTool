@@ -3,6 +3,30 @@ project(PixelAnnotationTool)
 
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
+### Tensorflow
+set(TensorFlow_SOURCE_DIR /home/undead/tensorflow)
+set(TensorFlow_BUILD_DIR /home/undead/tensorflow/bazel-bin/tensorflow)
+
+list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
+
+find_package(TensorFlow 1.14)
+
+set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${TensorFlow_ABI}")
+set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${TensorFlow_ABI}" )
+
+TensorFlow_REQUIRE_C_LIBRARY()
+TensorFlow_REQUIRE_SOURCE()
+
+include_directories(${TensorFlow_BUILD_DIR}/includes/)
+include_directories(${TensorFlow_SOURCE_DIR}/)
+include_directories(${TensorFlow_SOURCE_DIR}/tensorflow/)
+include_directories(${TensorFlow_SOURCE_DIR}/tensorflow/contrib/makefile/downloads/eigen/)
+LINK_DIRECTORIES(${TensorFlow_BUILD_DIR})
+LINK_DIRECTORIES(${TensorFlow_SOURCE_DIR}/tensorflow/contrib/makefile/downloads/protobuf/.src/.libs/)
+###
+
 if(WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 
@@ -83,6 +107,11 @@ add_custom_target(gen_qrc DEPENDS ${RSCS})
 #    eng.ts
 #    OPTIONS -source-language en_US -no-obsolete)
 
+file(GLOB tensorflow_SRC
+    src/tfwrapper/*.h
+    src/tfwrapper/*.hpp
+    src/tfwrapper/*.cpp
+)
 
 add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
 	src/main_window.cpp
@@ -95,15 +124,16 @@ add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
 	src/utils.h
 	src/image_mask.cpp
 	src/image_mask.h
-  src/image_canvas.cpp
+        src/image_canvas.cpp
 	src/image_canvas.h
 	src/label_widget.cpp 
 	src/label_widget.h 
-  src/main.cpp
+        src/main.cpp
+        ${tensorflow_SRC}
   ${UI_TEST_HDRS}
   ${RSCS}
   icon.rc)
-target_link_libraries(PixelAnnotationTool Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})	
+target_link_libraries(PixelAnnotationTool tensorflow_cc tensorflow_framework Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})
 
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)
 set(NAME_RELEASE PixelAnnotationTool_${ARCH_TYPE}_v${PIXEL_ANNOTATION_VERSION})
