@@ -29,7 +29,7 @@
 
 constexpr ushort AUTOSAVE_TIME_SECONDS = 180;
 
-const QString VERSION = "v1.3beta";
+const QString VERSION = "v1.4 neural";
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT
