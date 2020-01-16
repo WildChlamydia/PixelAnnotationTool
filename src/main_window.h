@@ -52,9 +52,12 @@ private:
     void loadJSON(const QString& file);
 
     TensorflowSegmentator *segmentator = nullptr;
+    QString last_network_path = "";
+
+    void loadSegmentator(const QString& filename);
 
 public:
-	ImageCanvas   *  image_canvas ;
+    ImageCanvas   *  image_canvas = nullptr;
     //std::vector<ImageCanvas*> _image_canvas;
 	//QScrollArea   *  scroll_area  ;
 

@@ -66,10 +66,6 @@ public slots :
 	void undo();
 	void redo();
     void scaleCanvas(int delta);
-	
-private:
-    bool eventFilter(QObject *target, QEvent *event) override;
-
     inline void addUndo() {
 
         if (_undo_list.size() >= MAX_UNDO_SIZE) {
@@ -85,14 +81,17 @@ private:
         ++_undo_index;
         _is_saved = false;
 
-        auto index = 0;
-        for (auto t: _undo_list) {
-            auto tt = t.color;
-            auto m = qImage2Mat(tt);
-            cv::imwrite(QString("/home/undead/undo/%1.png").arg(index++).toStdString(), m);
-        }
+//        auto index = 0;
+//        for (auto t: _undo_list) {
+//            auto tt = t.color;
+//            auto m = qImage2Mat(tt);
+//            cv::imwrite(QString("/home/undead/undo/%1.png").arg(index++).toStdString(), m);
+//        }
     }
 
+	
+private:
+    bool eventFilter(QObject *target, QEvent *event) override;
 	MainWindow *_ui;
 	
 	void _initPixmap();

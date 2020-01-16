@@ -13,18 +13,17 @@ find_package(TensorFlow 1.14)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${TensorFlow_ABI}")
-set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${TensorFlow_ABI}" )
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${TensorFlow_ABI}")
+#set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${TensorFlow_ABI}" )
 
-TensorFlow_REQUIRE_C_LIBRARY()
-TensorFlow_REQUIRE_SOURCE()
+#TensorFlow_REQUIRE_C_LIBRARY()
+#TensorFlow_REQUIRE_SOURCE()
 
 include_directories(${TensorFlow_BUILD_DIR}/includes/)
 include_directories(${TensorFlow_SOURCE_DIR}/)
 include_directories(${TensorFlow_SOURCE_DIR}/tensorflow/)
 include_directories(${TensorFlow_SOURCE_DIR}/tensorflow/contrib/makefile/downloads/eigen/)
 LINK_DIRECTORIES(${TensorFlow_BUILD_DIR})
-LINK_DIRECTORIES(${TensorFlow_SOURCE_DIR}/tensorflow/contrib/makefile/downloads/protobuf/.src/.libs/)
 ###
 
 if(WIN32)
@@ -130,9 +129,9 @@ add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
 	src/label_widget.h 
         src/main.cpp
         ${tensorflow_SRC}
-  ${UI_TEST_HDRS}
-  ${RSCS}
-  icon.rc)
+        ${UI_TEST_HDRS}
+        ${RSCS}
+        icon.rc)
 target_link_libraries(PixelAnnotationTool tensorflow_cc tensorflow_framework Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})
 
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)

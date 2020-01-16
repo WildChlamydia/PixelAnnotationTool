@@ -11,6 +11,7 @@ QImage mat2QImage(cv::Mat const& src) {
                  // of QImage::QImage ( const uchar * data, int width, int height, Format format )
     return dest;
 }
+
 cv::Mat qImage2Mat(QImage const& src) {
 	cv::Mat tmp(src.height(), src.width(), CV_8UC3, (uchar*)src.bits(), src.bytesPerLine());
 	cv::Mat result; // deep copy just in case (my lack of knowledge with open cv)

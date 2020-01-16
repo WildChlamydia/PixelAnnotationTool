@@ -97,6 +97,10 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     QSettings settings("Home", "PixelAnnotation");
     QString file = settings.value("last_json").toString();
+    last_network_path = settings.value("last_segmentator_path").toString();
+    if (!last_network_path.isEmpty()) {
+        loadSegmentator(last_network_path);
+    }
 
     if (file.isEmpty() || !QFile::exists(file)) {
         file = QDir::currentPath() + "/golf.json";
@@ -553,6 +557,56 @@ void MainWindow::loadJSON(const QString &file)
     update();
 }
 
+void MainWindow::loadSegmentator(const QString &filename)
+{
+    if (filename.isEmpty()) return;
+
+    if (segmentator) delete segmentator;
+
+    segmentator = new TensorflowSegmentator;
+    bool success = segmentator->load(filename.toStdString());
+
+    if (!success) {
+        QMessageBox::critical(this, "Problem appeared", "Can not load this network model, aborting");
+        delete segmentator;
+        return;
+    }
+
+    last_network_path = filename;
+    QSettings settings("Home", "PixelAnnotation");
+    settings.setValue("last_segmentator_path", last_network_path);
+    //segmentator->warmUp();
+
+    labels.clear();
+
+    auto label_names = segmentator->getLabelNames();
+    auto label_colors = segmentator->getLabelColours();
+
+    if (label_names.size() != label_colors.size()) {
+        return;
+    }
+
+    // LabelInfo(QString name, QString categorie, int id, int id_categorie, QColor color);
+    for (short i = 0; i < label_names.size(); ++i) {
+        QString name = QString::fromStdString(label_names[i]);
+        auto cv_color = label_colors[i];
+        // bgr -> rgb
+        QColor color = QColor(cv_color[2], cv_color[1], cv_color[0]);
+
+        LabelInfo new_info;
+        new_info.id = i;
+        new_info.name = name;
+        new_info.color = color;
+        new_info.categorie = name;
+        new_info.id_categorie = i;
+
+        labels[name] = new_info;
+    }
+
+    loadConfigLabels();
+
+}
+
 void MainWindow::on_actionOpenDir_triggered() {
     //statusBar()->clearMessage();
 
@@ -608,15 +662,41 @@ void MainWindow::on_button_NeuralNetwork_clicked()
         QMessageBox::critical(this, "Not network loaded", "Please, load network in Tools first");
         return;
     }
+
+    if (!image_canvas) return;
+
+    QImage canvas = image_canvas->getImage();
+    cv::Mat mat_canvas = qImage2Mat(canvas);
+
+    segmentator->inference({mat_canvas});
+    auto outputs = segmentator->getOutputIndices();
+    if (!outputs.size()) {
+        QMessageBox::critical(this, "Problem appeared", "For some reason network can not inference, aborting");
+        return;
+    }
+
+    auto mt = segmentator->getOutputColored()[0];
+
+    cv::Mat indices = outputs[0];
+    cv::resize(indices, indices, mat_canvas.size(), 0, 0, cv::INTER_NEAREST);
+    cv::cvtColor(indices, indices, cv::COLOR_GRAY2BGR);
+
+    QImage qt_indices = mat2QImage(indices);
+
+    ImageMask new_mask(canvas.size());
+    new_mask.id = qt_indices;
+
+    new_mask.updateColor(id_labels);
+    image_canvas->setMask(new_mask);
+
+    image_canvas->update();
+
+    image_canvas->addUndo();
+    setStarAtNameOfTab(true);
 }
 
 void MainWindow::on_actionLoad_network_pb_triggered()
 {
     QString filename = QFileDialog::getOpenFileName(this, "Choose network model", QDir::current().path(), "(*.pb)");
-    if (filename.isEmpty()) return;
-
-    if (segmentator) delete segmentator;
-
-    segmentator = new TensorflowSegmentator;
-    segmentator->load(filename.toStdString());
+    loadSegmentator(filename);
 }
