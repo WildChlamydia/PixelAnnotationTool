@@ -4,12 +4,12 @@ project(PixelAnnotationTool)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ### Tensorflow
-set(TensorFlow_SOURCE_DIR /home/undead/tensorflow)
-set(TensorFlow_BUILD_DIR /home/undead/tensorflow/bazel-bin/tensorflow)
+set(TensorFlow_SOURCE_DIR E:\\Development\\tf14)
+set(TensorFlow_BUILD_DIR E:\\Development\\tf14\\bazel-bin\\tensorflow)
 
-list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
+#list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
 
-find_package(TensorFlow 1.14)
+#find_package(TensorFlow 1.14)
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -23,14 +23,19 @@ include_directories(${TensorFlow_BUILD_DIR}/includes/)
 include_directories(${TensorFlow_SOURCE_DIR}/)
 include_directories(${TensorFlow_SOURCE_DIR}/tensorflow/)
 include_directories(${TensorFlow_SOURCE_DIR}/tensorflow/contrib/makefile/downloads/eigen/)
+include_directories(${TensorFlow_SOURCE_DIR}/bazel-tensorflow/external/eigen_archive)
+include_directories(${TensorFlow_SOURCE_DIR}/tensorflow/contrib/makefile/downloads/protobuf/src/)
+
 LINK_DIRECTORIES(${TensorFlow_BUILD_DIR})
+LINK_DIRECTORIES(${TensorFlow_SOURCE_DIR}/tensorflow/contrib/makefile/downloads/protobuf/src/.libs/)
+
 ###
 
 if(WIN32)
   set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} /std:c++17")
 
   # Setup yours
-  set(CMAKE_PREFIX_PATH E:\\Development\\Qt5.7_VS15\\5.7\\msvc2015)
+  set(CMAKE_PREFIX_PATH E:\\Development\\Qt5.11\\5.11.0\\msvc2015_64)
   set(OpenCV_DIR E:\\Development\\opencv\\build)
 
   # StringPooling: true == /GF  false == /GF-
@@ -132,7 +137,7 @@ add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
         ${UI_TEST_HDRS}
         ${RSCS}
         icon.rc)
-target_link_libraries(PixelAnnotationTool tensorflow_cc tensorflow_framework Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})
+target_link_libraries(PixelAnnotationTool tensorflow tensorflow_framework protobuf protobuf-lite Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})
 
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)
 set(NAME_RELEASE PixelAnnotationTool_${ARCH_TYPE}_v${PIXEL_ANNOTATION_VERSION})

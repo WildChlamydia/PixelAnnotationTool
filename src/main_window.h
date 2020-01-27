@@ -25,6 +25,9 @@
 #include "label_widget.h"
 #include "labels.h"
 
+#define NOMINMAX
+#undef max
+#undef min
 #include "tfwrapper/tensorflow_segmentator.hpp"
 
 constexpr ushort AUTOSAVE_TIME_SECONDS = 180;

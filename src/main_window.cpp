@@ -95,18 +95,21 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     list_label->installEventFilter(this);
     this->dockWidget_3->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
-    QSettings settings("Home", "PixelAnnotation");
-    QString file = settings.value("last_json").toString();
+
+	QSettings settings("Home", "PixelAnnotation");
+	QString file = settings.value("last_json").toString();
+
+	if (file.isEmpty() || !QFile::exists(file)) {
+		file = QDir::currentPath() + "/default.json";
+	}
+	loadJSON(file);
+
+    
     last_network_path = settings.value("last_segmentator_path").toString();
     if (!last_network_path.isEmpty()) {
         loadSegmentator(last_network_path);
     }
 
-    if (file.isEmpty() || !QFile::exists(file)) {
-        file = QDir::currentPath() + "/golf.json";
-    }
-
-    loadJSON(file);
 }
 
 void MainWindow::closeCurrentTab() {
@@ -577,10 +580,14 @@ void MainWindow::loadSegmentator(const QString &filename)
     settings.setValue("last_segmentator_path", last_network_path);
     //segmentator->warmUp();
 
-    labels.clear();
-
     auto label_names = segmentator->getLabelNames();
     auto label_colors = segmentator->getLabelColours();
+
+	if (!label_names.size() || !label_colors.size()) {
+		return;
+	}
+
+	labels.clear();
 
     if (label_names.size() != label_colors.size()) {
         return;

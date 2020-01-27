@@ -26,6 +26,9 @@
 //#include "opencv/cv.h"
 //#include "opencv/cv.hpp"
 
+#define NOMINMAX
+#undef max
+#undef min
 #include <opencv2/opencv.hpp>
 #include "tensorflow/core/public/session.h"
 #include "tensorflow/core/graph/default_device.h"
