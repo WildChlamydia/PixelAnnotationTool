@@ -33,7 +33,7 @@
 #include "tensorflow/core/public/session.h"
 #include "tensorflow/core/graph/default_device.h"
 
-#define TFDEBUG
+//#define TFDEBUG
 
 namespace tf_utils
 {

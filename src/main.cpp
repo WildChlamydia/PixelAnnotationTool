@@ -5,6 +5,9 @@
 #include "main_window.h"
 #include <QtDebug>
 #include <QTranslator>
+#include <QSplashScreen>
+#include <QTime>
+
 #ifdef Q_OS_WIN
 #include <QTextCodec>
 #define _HAS_ITERATOR_DEBUGGING 0
@@ -16,14 +19,14 @@ int main(int argc, char *argv[])
 #ifdef Q_OS_WIN
     QTextCodec::setCodecForLocale(QTextCodec::codecForName("CP1251"));
 #endif
-
     QApplication app(argc, argv);
 
-	MainWindow win;
+    MainWindow win;
+
     win.setWindowTitle("PixelAnnotationTool " + VERSION);
     win.setWindowIcon(QIcon("://icon.png"));
 
-	win.show();
+    win.show();
 
     return app.exec();
 }

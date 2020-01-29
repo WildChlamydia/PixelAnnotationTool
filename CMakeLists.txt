@@ -4,20 +4,16 @@ project(PixelAnnotationTool)
 set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ### Tensorflow
+if(WIN32)
 set(TensorFlow_SOURCE_DIR E:\\Development\\tf14)
 set(TensorFlow_BUILD_DIR E:\\Development\\tf14\\bazel-bin\\tensorflow)
-
-#list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake/modules)
-
-#find_package(TensorFlow 1.14)
+else()
+    set(TensorFlow_SOURCE_DIR /home/undead/tensorflow)
+    set(TensorFlow_BUILD_DIR /home/undead/tensorflow/bazel-bin/tensorflow)
+endif()
 
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${TensorFlow_ABI}")
-#set(CMAKE_EXE_LINKER_FLAGS  "${CMAKE_EXE_LINKER_FLAGS} -D_GLIBCXX_USE_CXX11_ABI=${TensorFlow_ABI}" )
-
-#TensorFlow_REQUIRE_C_LIBRARY()
-#TensorFlow_REQUIRE_SOURCE()
 
 include_directories(${TensorFlow_BUILD_DIR}/includes/)
 include_directories(${TensorFlow_SOURCE_DIR}/)
@@ -137,7 +133,12 @@ add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
         ${UI_TEST_HDRS}
         ${RSCS}
         icon.rc)
-target_link_libraries(PixelAnnotationTool tensorflow tensorflow_framework protobuf protobuf-lite Qt5::Gui Qt5::Widgets ${OpenCV_LIBS})
+
+if (WIN32)
+    target_link_libraries(PixelAnnotationTool tensorflow tensorflow_framework protobuf protobuf-lite Qt5::Gui Qt5::Widgets ${OpenCV_LIBS} )
+else()
+    target_link_libraries(PixelAnnotationTool  -Wl,--allow-multiple-definition -Wl,--whole-archive -Wl,--no-as-needed tensorflow tensorflow_framework protobuf protobuf-lite Qt5::Gui Qt5::Widgets ${OpenCV_LIBS} )
+endif()
 
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)
 set(NAME_RELEASE PixelAnnotationTool_${ARCH_TYPE}_v${PIXEL_ANNOTATION_VERSION})

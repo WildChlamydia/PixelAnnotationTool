@@ -54,9 +54,8 @@ tensorflow::SessionOptions TensorflowInferencer::configureSession()
             gpu_options->set_visible_device_list(_visible_devices);
         }
         gpu_options->set_per_process_gpu_memory_fraction(_gpu_memory_fraction);
-        //gpu_options->set_allow_growth(_allow_growth);
+        gpu_options->set_allow_growth(_allow_growth);
     }
-    gpu_options->set_allow_growth(_allow_growth);
 
     GraphOptions *graph_opts = new GraphOptions;
     /// TODO: Needs tests, maybe not all options is ok

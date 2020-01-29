@@ -32,7 +32,9 @@
 
 constexpr ushort AUTOSAVE_TIME_SECONDS = 180;
 
-const QString VERSION = "v1.4 neural";
+const QString VERSION = "v1.5 neural";
+
+TensorflowSegmentator* loadSegmentator(const QString& filename, QString* error);
 
 class MainWindow : public QMainWindow, public Ui::MainWindow {
     Q_OBJECT
@@ -55,11 +57,13 @@ private:
     void loadJSON(const QString& file);
 
     TensorflowSegmentator *segmentator = nullptr;
-    QString last_network_path = "";
+    QString _last_network_path = "";
+    bool _network_load_in_process = false;
+    bool _network_inference_in_process = false;
 
-    void loadSegmentator(const QString& filename);
 
 public:
+
     ImageCanvas   *  image_canvas = nullptr;
     //std::vector<ImageCanvas*> _image_canvas;
 	//QScrollArea   *  scroll_area  ;
@@ -85,6 +89,8 @@ public:
     void setStarAtNameOfTab(bool star);
     bool eventFilter(QObject *target, QEvent *event);
 
+    QString getLastNetworkPath() const;
+
 public slots:
 
     void autosave();
@@ -107,6 +113,8 @@ public slots:
     void treeWidgetClicked();
 
 private slots:
+    void setStatus(const QString& text);
+    void loadNetwork(const QString& filename);
     void on_button_NeuralNetwork_clicked();
     void on_actionLoad_network_pb_triggered();
 };

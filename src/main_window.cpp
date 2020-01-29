@@ -15,25 +15,24 @@
 #include <QColorDialog>
 #include <QTextStream>
 #include <QSettings>
-
-//#include "pixel_annotation_tool_version.h"
+#include <QtConcurrent/QtConcurrent>
 
 #include "about_dialog.h"
 
 MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
-	: QMainWindow(parent, flags)
+    : QMainWindow(parent, flags)
 {
-	setupUi(this);
+    setupUi(this);
 
-	list_label->setSpacing(1);
+    list_label->setSpacing(1);
     image_canvas = nullptr;
-	save_action = new QAction(tr("&Save current image"), this);
+    save_action = new QAction(tr("&Save current image"), this);
     save_action->setIcon(QIcon(":/save.png"));
     close_tab_action = new QAction(tr("&Close current tab"), this);
-	undo_action = new QAction(tr("&Undo"), this);
-	redo_action = new QAction(tr("&Redo"), this);
-	undo_action->setShortcuts(QKeySequence::Undo);
-	redo_action->setShortcuts(QKeySequence::Redo);
+    undo_action = new QAction(tr("&Undo"), this);
+    redo_action = new QAction(tr("&Redo"), this);
+    undo_action->setShortcuts(QKeySequence::Undo);
+    redo_action->setShortcuts(QKeySequence::Redo);
 
     next_image_action = new QAction(tr("Next image"), this);
     next_image_action->setShortcuts({QKeySequence("E")});
@@ -43,10 +42,10 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
 
     save_action->setShortcut(Qt::CTRL + Qt::Key_S);
     close_tab_action->setShortcut(Qt::CTRL + Qt::Key_W);
-	undo_action->setEnabled(false);
-	redo_action->setEnabled(false);
+    undo_action->setEnabled(false);
+    redo_action->setEnabled(false);
 
-	menuFile->addAction(save_action);
+    menuFile->addAction(save_action);
     menuFile->addSeparator();
     menuFile->addAction(this->actionQuit);
     menuFile->addSeparator();
@@ -54,31 +53,31 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     menuFile->addAction(actionSave_config_file);
 
     menuEdit->addAction(close_tab_action);
-	menuEdit->addAction(undo_action);
-	menuEdit->addAction(redo_action);
+    menuEdit->addAction(undo_action);
+    menuEdit->addAction(redo_action);
     menuEdit->addSeparator();
     menuEdit->addAction(next_image_action);
     menuEdit->addAction(prev_image_action);
 
     this->checkbox_border_ws->setVisible(false);
 
-	tabWidget->clear();
-    
-	connect(button_watershed      , SIGNAL(released())                        , this, SLOT(runWatershed()  ));
+    tabWidget->clear();
+
+    connect(button_watershed      , SIGNAL(released())                        , this, SLOT(runWatershed()  ));
 
     connect(next_image_action      , SIGNAL(triggered())                        , this, SLOT(pickNextImage()  ));
     connect(prev_image_action      , SIGNAL(triggered())                        , this, SLOT(pickPrevImage()  ));
 
-	connect(actionOpen_config_file, SIGNAL(triggered())                       , this, SLOT(loadConfigFile()));
-	connect(actionSave_config_file, SIGNAL(triggered())                       , this, SLOT(saveConfigFile()));
+    connect(actionOpen_config_file, SIGNAL(triggered())                       , this, SLOT(loadConfigFile()));
+    connect(actionSave_config_file, SIGNAL(triggered())                       , this, SLOT(saveConfigFile()));
     connect(close_tab_action      , SIGNAL(triggered())                       , this, SLOT(closeCurrentTab()));
-	connect(tabWidget             , SIGNAL(tabCloseRequested(int))            , this, SLOT(closeTab(int)   ));
-	connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
+    connect(tabWidget             , SIGNAL(tabCloseRequested(int))            , this, SLOT(closeTab(int)   ));
+    connect(tabWidget             , SIGNAL(currentChanged(int))               , this, SLOT(updateConnect(int)));
     connect(tree_widget_img       , SIGNAL(itemClicked(QTreeWidgetItem *,int)), this, SLOT(treeWidgetClicked()));
-    
+
     labels = defaultLabels();
 
-	loadConfigLabels();
+    loadConfigLabels();
 
     connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
             this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
@@ -96,20 +95,24 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     this->dockWidget_3->setFeatures(QDockWidget::DockWidgetMovable | QDockWidget::DockWidgetFloatable);
 
 
-	QSettings settings("Home", "PixelAnnotation");
-	QString file = settings.value("last_json").toString();
+    QSettings settings("Home", "PixelAnnotation");
+    QString file = settings.value("last_json").toString();
 
-	if (file.isEmpty() || !QFile::exists(file)) {
-		file = QDir::currentPath() + "/default.json";
-	}
-	loadJSON(file);
-
-    
-    last_network_path = settings.value("last_segmentator_path").toString();
-    if (!last_network_path.isEmpty()) {
-        loadSegmentator(last_network_path);
+    if (file.isEmpty() || !QFile::exists(file)) {
+        file = QDir::currentPath() + "/default.json";
     }
+    loadJSON(file);
 
+
+    _last_network_path = settings.value("last_segmentator_path").toString();
+
+    // Configuring status label
+    labelStatusBar->setFixedWidth(260);
+    labelStatusBar->setFixedHeight(60);
+    labelStatusBar->setWordWrap(true);
+    //
+
+    loadNetwork(_last_network_path);
 }
 
 void MainWindow::closeCurrentTab() {
@@ -149,7 +152,7 @@ void MainWindow::closeTab(int index) {
 }
 
 void MainWindow::loadConfigLabels() {
-	list_label->clear();
+    list_label->clear();
     QMapIterator<QString, LabelInfo> it(labels);
     auto values = labels.values();
 
@@ -164,65 +167,65 @@ void MainWindow::loadConfigLabels() {
 
     for (const auto& key : list) {
         const LabelInfo & label = labels[key];
-		QListWidgetItem * item = new QListWidgetItem(list_label);
+        QListWidgetItem * item = new QListWidgetItem(list_label);
         LabelWidget * label_widget = new LabelWidget(label, this);
 
         // WARNING: Magic label item height constant
         label_widget->setFixedHeight(32);
-		
-		item->setSizeHint(label_widget->sizeHint());
-		item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
-		list_label->addItem(item);
-		list_label->setItemWidget(item, label_widget);
+
+        item->setSizeHint(label_widget->sizeHint());
+        item->setFlags(Qt::ItemIsSelectable | Qt::ItemIsEnabled);
+        list_label->addItem(item);
+        list_label->setItemWidget(item, label_widget);
         labels[key].item = item;
 
         label_widget->installEventFilter(this);
-	}
-	id_labels = getId2Label(labels);
+    }
+    id_labels = getId2Label(labels);
 }
 
 void MainWindow::changeColor(QListWidgetItem *item) {
 
     if (!item) return;
 
-	LabelWidget * widget = static_cast<LabelWidget*>(list_label->itemWidget(item));
+    LabelWidget * widget = static_cast<LabelWidget*>(list_label->itemWidget(item));
     const LabelInfo &label = labels[widget->text()];
     image_canvas->replaceCurrentLabel(label);
 }
 
 void MainWindow::changeLabel(QListWidgetItem* current, QListWidgetItem* previous) {
-	if (current == NULL && previous == NULL)
-		return;
+    if (current == NULL && previous == NULL)
+        return;
 
-	LabelWidget * label;
-	if (previous == NULL) {
+    LabelWidget * label;
+    if (previous == NULL) {
         for (short i = 0, total = list_label->count(); i < total; ++i) {
             LabelWidget* label = static_cast<LabelWidget*>(list_label->itemWidget(list_label->item(i)));
-			label->setSelected(false);
-		}
-	} else {
-		label = static_cast<LabelWidget*>(list_label->itemWidget(previous));
-		label->setSelected(false);
-	}
+            label->setSelected(false);
+        }
+    } else {
+        label = static_cast<LabelWidget*>(list_label->itemWidget(previous));
+        label->setSelected(false);
+    }
 
-	if (current == NULL) current = previous;
+    if (current == NULL) current = previous;
 
-	label = static_cast<LabelWidget*>(list_label->itemWidget(current));
-	label->setSelected(true);
+    label = static_cast<LabelWidget*>(list_label->itemWidget(current));
+    label->setSelected(true);
 
-	QString str;
-	QString key = label->text();
-	QTextStream sstr(&str);
-	sstr <<"label=["<< key <<"] id=[" << labels[key].id << "] categorie=[" << labels[key].categorie << "] color=[" << labels[key].color.name() << "]" ;
+    QString str;
+    QString key = label->text();
+    QTextStream sstr(&str);
+    sstr <<"label=["<< key <<"] id=[" << labels[key].id << "] categorie=[" << labels[key].categorie << "] color=[" << labels[key].color.name() << "]" ;
     //statusBar()->showMessage(str);
-	image_canvas->setId(labels[key].id);
+    image_canvas->setId(labels[key].id);
 }
 
 void MainWindow::runWatershed(ImageCanvas * ic) {
     auto w = watershed(ic->getImage(), ic->getMask().id);
     ic->setWatershedMask(w);
     //checkbox_watershed_mask->setCheckState(Qt::CheckState::Checked);
-	ic->update();
+    ic->update();
 }
 
 void MainWindow::runWatershed() {
@@ -356,13 +359,13 @@ void MainWindow::updateConnect(ImageCanvas * ic) {
     connect(spinbox_alpha, SIGNAL(valueChanged(double)), ic, SLOT(alphaChanged(double)));
     connect(spinbox_pen_size, SIGNAL(valueChanged(int)), ic, SLOT(setSizePen(int)));
 
-	connect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
-	connect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
-	connect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
-	connect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
-	connect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
+    connect(checkbox_manuel_mask, SIGNAL(clicked()), ic, SLOT(update()));
+    connect(actionClear, SIGNAL(triggered()), ic, SLOT(clearMask()));
+    connect(undo_action, SIGNAL(triggered()), ic, SLOT(undo()));
+    connect(redo_action, SIGNAL(triggered()), ic, SLOT(redo()));
+    connect(save_action, SIGNAL(triggered()), ic, SLOT(saveMask()));
     connect(checkbox_border_ws, SIGNAL(clicked()), ic, SLOT(update()));
-    
+
 }
 
 void MainWindow::allDisconnnect(ImageCanvas *ic) {
@@ -384,10 +387,10 @@ void MainWindow::allDisconnnect(ImageCanvas *ic) {
 
 ImageCanvas * MainWindow::newImageCanvas() {
     ImageCanvas * ic = new ImageCanvas( this);
-	ic->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
-	ic->setScaledContents(true);
-	updateConnect(ic);
-	return ic;
+    ic->setSizePolicy(QSizePolicy::Ignored, QSizePolicy::Ignored);
+    ic->setScaledContents(true);
+    updateConnect(ic);
+    return ic;
 }
 
 void MainWindow::updateConnect(int index) {
@@ -397,9 +400,9 @@ void MainWindow::updateConnect(int index) {
     image_canvas = getImageCanvas(index);
     if(image_canvas!= NULL)
         list_label->setEnabled(true);
-    else 
+    else
         list_label->setEnabled(false);
-	updateConnect(image_canvas);
+    updateConnect(image_canvas);
 }
 
 ImageCanvas * MainWindow::getImageCanvas(int index) {
@@ -410,34 +413,34 @@ ImageCanvas * MainWindow::getImageCanvas(int index) {
 
 int MainWindow::getImageCanvas(QString name, ImageCanvas * ic) {
     for (short i = 0; i < tabWidget->count(); ++i) {
-		if (tabWidget->tabText(i).startsWith(name) ) {
+        if (tabWidget->tabText(i).startsWith(name) ) {
             ic = getImageCanvas(i);
-			return i;
-		}
-	}
-	ic = newImageCanvas();
-	QString iDir = currentDir();
-	QString filepath(iDir + "/" + name);
-	ic->loadImage(filepath);
+            return i;
+        }
+    }
+    ic = newImageCanvas();
+    QString iDir = currentDir();
+    QString filepath(iDir + "/" + name);
+    ic->loadImage(filepath);
     int index = tabWidget->addTab(ic->getScrollParent(), name);
     tabWidget->widget(index)->setFocus(Qt::ActiveWindowFocusReason);
-	return index;
+    return index;
 }
 
 QString MainWindow::currentDir() const {
-	QTreeWidgetItem *current = tree_widget_img->currentItem();
-	if (!current || !current->parent())
-		return "";
+    QTreeWidgetItem *current = tree_widget_img->currentItem();
+    if (!current || !current->parent())
+        return "";
 
-	return current->parent()->text(0);
+    return current->parent()->text(0);
 }
 
 QString MainWindow::currentFile() const {
-	QTreeWidgetItem *current = tree_widget_img->currentItem();
-	if (!current || !current->parent())
-		return "";
+    QTreeWidgetItem *current = tree_widget_img->currentItem();
+    if (!current || !current->parent())
+        return "";
 
-	return current->text(0);
+    return current->text(0);
 }
 
 
@@ -462,6 +465,88 @@ void MainWindow::treeWidgetClicked() {
         image_canvas->setId(old_canvas->getId());
     }
 
+}
+
+void MainWindow::setStatus(const QString &text)
+{
+    labelStatusBar->setText(text);
+}
+
+void MainWindow::loadNetwork(const QString &filename)
+{
+    if (!filename.isEmpty()) {
+        QString *error_str = new QString();
+
+        auto future = QtConcurrent::run(&loadSegmentator, filename, error_str);
+        QFutureWatcher<TensorflowSegmentator*> *watcher = new QFutureWatcher<TensorflowSegmentator*>(this);
+
+        _network_load_in_process = true;
+        setStatus("Network loading...");
+
+
+        connect(watcher, &QFutureWatcher<TensorflowSegmentator*>::finished, this,
+                [this, error_str]() {
+
+            _network_load_in_process = false;
+
+            auto s = (QFutureWatcher<TensorflowSegmentator*>*)(sender());
+            auto future = s->future();
+            if (error_str->isEmpty()) {
+                if (segmentator) {
+                    delete segmentator;
+                    segmentator = nullptr;
+                }
+                this->segmentator = future.result();
+                setStatus("Network load finished successfuly");
+                delete error_str;
+            } else {
+                setStatus("Network load failed: " + *error_str);
+                delete error_str;
+                return;
+            }
+
+            _last_network_path = QString::fromStdString(segmentator->getPath());
+
+            QSettings settings("Home", "PixelAnnotation");
+            settings.setValue("last_segmentator_path", _last_network_path);
+
+            segmentator->warmUp();
+
+            auto label_names = segmentator->getLabelNames();
+            auto label_colors = segmentator->getLabelColours();
+
+            if (!label_names.size() || !label_colors.size()) {
+                return;
+            }
+
+            labels.clear();
+
+            if (label_names.size() != label_colors.size()) {
+                return;
+            }
+
+            for (short i = 0; i < label_names.size(); ++i) {
+                QString name = QString::fromStdString(label_names[i]);
+                auto cv_color = label_colors[i];
+                // bgr -> rgb
+                QColor color = QColor(cv_color[2], cv_color[1], cv_color[0]);
+
+                LabelInfo new_info;
+                new_info.id = i;
+                new_info.name = name;
+                new_info.color = color;
+                new_info.categorie = name;
+                new_info.id_categorie = i;
+
+                labels[name] = new_info;
+            }
+
+            loadConfigLabels();
+
+        });
+
+        watcher->setFuture(future);
+    }
 }
 
 void MainWindow::on_tree_widget_img_currentItemChanged(QTreeWidgetItem *current, QTreeWidgetItem *previous) {
@@ -560,57 +645,43 @@ void MainWindow::loadJSON(const QString &file)
     update();
 }
 
-void MainWindow::loadSegmentator(const QString &filename)
+QString MainWindow::getLastNetworkPath() const
 {
-    if (filename.isEmpty()) return;
+    return _last_network_path;
+}
 
-    if (segmentator) delete segmentator;
+TensorflowSegmentator* loadSegmentator(const QString &filename, QString* error)
+{
+    if (filename.isEmpty()) return nullptr;
+
+    TensorflowSegmentator* segmentator;
 
     segmentator = new TensorflowSegmentator;
+    segmentator->setAllowSoftPlacement(false);
+    segmentator->setCpuOnly(true);
     bool success = segmentator->load(filename.toStdString());
 
     if (!success) {
-        QMessageBox::critical(this, "Problem appeared", "Can not load this network model, aborting");
+        *error = "Can not load this model file";
         delete segmentator;
-        return;
+        segmentator = nullptr;
+        return nullptr;
     }
 
-    last_network_path = filename;
-    QSettings settings("Home", "PixelAnnotation");
-    settings.setValue("last_segmentator_path", last_network_path);
-    //segmentator->warmUp();
-
-    auto label_names = segmentator->getLabelNames();
-    auto label_colors = segmentator->getLabelColours();
-
-	if (!label_names.size() || !label_colors.size()) {
-		return;
-	}
-
-	labels.clear();
-
-    if (label_names.size() != label_colors.size()) {
-        return;
+    if (segmentator->getInputWidth() == 0 || segmentator->getInputWidth() == 0) {
+        segmentator->setInputWidth(800);
+        segmentator->setInputHeight(800);
     }
 
-    // LabelInfo(QString name, QString categorie, int id, int id_categorie, QColor color);
-    for (short i = 0; i < label_names.size(); ++i) {
-        QString name = QString::fromStdString(label_names[i]);
-        auto cv_color = label_colors[i];
-        // bgr -> rgb
-        QColor color = QColor(cv_color[2], cv_color[1], cv_color[0]);
-
-        LabelInfo new_info;
-        new_info.id = i;
-        new_info.name = name;
-        new_info.color = color;
-        new_info.categorie = name;
-        new_info.id_categorie = i;
-
-        labels[name] = new_info;
+    if (segmentator->getOutputNodeName().empty()) {
+        *error = "Seems no output node name specified";
+        delete segmentator;
+        segmentator = nullptr;
+        return nullptr;
     }
 
-    loadConfigLabels();
+
+    return segmentator;
 
 }
 
@@ -620,34 +691,34 @@ void MainWindow::on_actionOpenDir_triggered() {
     QSettings settings("Home", "PixelAnnotation");
 
     QString openedDir = QFileDialog::getExistingDirectory(this, "Choose a directory to be read in", curr_open_dir);
-	if (openedDir.isEmpty())
-		return;
+    if (openedDir.isEmpty())
+        return;
 
     if (curr_open_dir == openedDir) {
         QMessageBox::information(this, "Already opened", "This directory is alread opened!");
         return;
     }
 
-	curr_open_dir = openedDir;
+    curr_open_dir = openedDir;
     settings.setValue("last_opened_dir", curr_open_dir);
-	
+
     openDirectory();
 //	setWindowTitle("PixelAnnotation - " + openedDir);
 }
 
 
 void MainWindow::saveConfigFile() {
-	QString file = QFileDialog::getSaveFileName(this, tr("Save Config File"), QString(), tr("JSon file (*.json)"));
-	QFile save_file(file);
-	if (!save_file.open(QIODevice::WriteOnly)) {
-		qWarning("Couldn't open save file.");
-		return ;
-	}
-	QJsonObject object;
-	labels.write(object);
-	QJsonDocument saveDoc(object);
-	save_file.write(saveDoc.toJson());
-	save_file.close();
+    QString file = QFileDialog::getSaveFileName(this, tr("Save Config File"), QString(), tr("JSon file (*.json)"));
+    QFile save_file(file);
+    if (!save_file.open(QIODevice::WriteOnly)) {
+        qWarning("Couldn't open save file.");
+        return ;
+    }
+    QJsonObject object;
+    labels.write(object);
+    QJsonDocument saveDoc(object);
+    save_file.write(saveDoc.toJson());
+    save_file.close();
 }
 
 void MainWindow::loadConfigFile() {
@@ -658,13 +729,22 @@ void MainWindow::loadConfigFile() {
 }
 
 void MainWindow::on_actionAbout_triggered() {
-	AboutDialog *d = new AboutDialog(this);
-	d->setModal(true);
-	d->show();
+    AboutDialog *d = new AboutDialog(this);
+    d->setModal(true);
+    d->show();
 }
 
 void MainWindow::on_button_NeuralNetwork_clicked()
 {
+    if (_network_load_in_process) {
+        QMessageBox::warning(this, "Error", "Sorry, network is loading, please wait!");
+        return;
+    }
+    if (_network_inference_in_process) {
+        QMessageBox::warning(this, "Error", "Sorry, network is inferencing, please wait!!");
+        return;
+    }
+
     if (!segmentator) {
         QMessageBox::critical(this, "Not network loaded", "Please, load network in Tools first");
         return;
@@ -674,36 +754,73 @@ void MainWindow::on_button_NeuralNetwork_clicked()
 
     QImage canvas = image_canvas->getImage();
     cv::Mat mat_canvas = qImage2Mat(canvas);
+    std::vector<cv::Mat> inf_vec = {mat_canvas};
 
-    segmentator->inference({mat_canvas});
-    auto outputs = segmentator->getOutputIndices();
-    if (!outputs.size()) {
-        QMessageBox::critical(this, "Problem appeared", "For some reason network can not inference, aborting");
-        return;
-    }
+    _network_inference_in_process = true;
+    setStatus("Inferencing network...");
 
-    auto mt = segmentator->getOutputColored()[0];
+    auto future = QtConcurrent::run(this->segmentator,
+                                    static_cast<std::string(TensorflowSegmentator::*)(const std::vector<cv::Mat>&)>(&TensorflowSegmentator::inference),
+                                    inf_vec);
+    QFutureWatcher<std::string> *watcher = new QFutureWatcher<std::string>(this);
 
-    cv::Mat indices = outputs[0];
-    cv::resize(indices, indices, mat_canvas.size(), 0, 0, cv::INTER_NEAREST);
-    cv::cvtColor(indices, indices, cv::COLOR_GRAY2BGR);
+    connect(watcher, &QFutureWatcher<TensorflowSegmentator*>::finished, this,
+            [this, mat_canvas, canvas]() {
 
-    QImage qt_indices = mat2QImage(indices);
 
-    ImageMask new_mask(canvas.size());
-    new_mask.id = qt_indices;
+        auto s = (QFutureWatcher<std::string>*)(sender());
+        auto future = s->future();
+        auto err_str = future.result();
+        _network_inference_in_process = false;
 
-    new_mask.updateColor(id_labels);
-    image_canvas->setMask(new_mask);
+        if (err_str != "OK") {
+            this->setStatus("Can't inference network: " + QString::fromStdString(err_str));
+            return;
+        }
 
-    image_canvas->update();
+        auto outputs = segmentator->getOutputIndices();
+        if (!outputs.size()) {
+            this->setStatus("Network resturn empty output, inference failed");
+            return;
+        }
+        this->setStatus("Network inference finished successful");
 
-    image_canvas->addUndo();
-    setStarAtNameOfTab(true);
+        auto mt = segmentator->getOutputColored()[0];
+
+        cv::Mat indices = outputs[0];
+        cv::resize(indices, indices, mat_canvas.size(), 0, 0, cv::INTER_NEAREST);
+        cv::cvtColor(indices, indices, cv::COLOR_GRAY2BGR);
+
+        QImage qt_indices = mat2QImage(indices);
+
+        ImageMask new_mask(canvas.size());
+        new_mask.id = qt_indices;
+
+        new_mask.updateColor(id_labels);
+        image_canvas->setMask(new_mask);
+
+        image_canvas->update();
+
+        image_canvas->addUndo();
+        setStarAtNameOfTab(true);
+
+
+    });
+    watcher->setFuture(future);
 }
 
 void MainWindow::on_actionLoad_network_pb_triggered()
 {
+    if (_network_load_in_process) {
+        QMessageBox::warning(this, "Error", "Sorry, some network load already is in process, wait its finished!");
+        return;
+    }
+    if (_network_inference_in_process) {
+        QMessageBox::warning(this, "Error", "Sorry, network is inferencing, please wait!!");
+        return;
+    }
     QString filename = QFileDialog::getOpenFileName(this, "Choose network model", QDir::current().path(), "(*.pb)");
-    loadSegmentator(filename);
+    if (filename.isEmpty()) return;
+
+    loadNetwork(filename);
 }
