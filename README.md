@@ -1,19 +1,23 @@
 PixelAnnotationTool
 ============================
 
-Software that allows you to manually and quickly annotate images in directories.
-The method is pseudo manual because it uses the algorithm [watershed marked](http://docs.opencv.org/3.1.0/d7/d1b/group__imgproc__misc.html#ga3267243e4d3f95165d55a618c65ac6e1) of OpenCV. The general idea is to manually provide the marker with brushes and then to launch the algorithm. If at first pass the segmentation needs to be corrected, the user can refine the markers by drawing new ones on the erroneous areas (as shown on video below).
+Software that allows you to manually and quickly annotate segmentation images in directories.
 
-[![gif_file](giphy.gif)](https://youtu.be/wxi2dInWDnI)
-
-Example :
-
-<img src="https://raw.githubusercontent.com/abreheret/PixelAnnotationTool/master/images_test/Abbey_Road.jpg" width="300"/> <img src="https://raw.githubusercontent.com/abreheret/PixelAnnotationTool/master/images_test/Abbey_Road_color_mask.png" width="300"/>
+<img src="https://github.com/UndeadBlow/PixelAnnotationTool/raw/neural_net/neural_demo.jpg"/>
 
 ----------
 
 Versions:
 
+**1.5neural**
+
+* Neural network support added
+* If classes and their colors in network model file (.pb) available then will be load on the top of JSON
+* Network inference can be used for annotation help
+* Everything heavy (network load and inference) works async
+* Added ready-to-use binary for Windows x64 and network example (lanes segmentation)
+* Last network loaded will be saved and loaded on next start
+* Fixed some bugs
 
 **1.3beta**
 
@@ -26,9 +30,10 @@ Versions:
 
 
 ### Building Dependencies :
-* [Qt](https://www.qt.io/download-open-source/)  >= 5.x
-* [CMake](https://cmake.org/download/) >= 2.8.x 
-* [OpenCV](http://opencv.org/releases.html) >= 2.4.x 
+* [Qt](https://www.qt.io/download-open-source/)  >= 5.10
+* [CMake](https://cmake.org/download/) >= 3.0.0
+* [OpenCV](http://opencv.org/releases.html) >= 3.0.0
+* [Tensorflow](https://www.tensorflow.org/) >= 1.10
 * For Windows Compiler : Works under Visual Studio >= 2015
 
 ### Download binaries :
