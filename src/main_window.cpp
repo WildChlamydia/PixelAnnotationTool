@@ -82,7 +82,7 @@ MainWindow::MainWindow(QWidget *parent, Qt::WindowFlags flags)
     connect(list_label, SIGNAL(currentItemChanged(QListWidgetItem*, QListWidgetItem*)),
             this, SLOT(changeLabel(QListWidgetItem*, QListWidgetItem*)));
 
-    list_label->setEnabled(false);
+    list_label->setEnabled(true);
     openDirectory();
 
     connect(&_timer_autosave,
@@ -234,9 +234,13 @@ void MainWindow::runWatershed() {
         runWatershed(ic);
 }
 
-void MainWindow::setStarAtNameOfTab(bool star) {
+void MainWindow::setStarAtNameOfTab(bool star, int index) {
+
+    if (index < 0) {
+        index = tabWidget->currentIndex();
+    }
+
     if (tabWidget->count() > 0) {
-        int index = tabWidget->currentIndex();
         QString name = tabWidget->tabText(index);
         if (star && !name.endsWith("*")) { //add star
             name += "*";
@@ -247,6 +251,7 @@ void MainWindow::setStarAtNameOfTab(bool star) {
             tabWidget->setTabText(index, name);
         }
     }
+
 }
 
 bool MainWindow::eventFilter(QObject *target, QEvent *event)
@@ -510,7 +515,7 @@ void MainWindow::loadNetwork(const QString &filename)
             QSettings settings("Home", "PixelAnnotation");
             settings.setValue("last_segmentator_path", _last_network_path);
 
-            segmentator->warmUp();
+    //            segmentator->warmUp();
 
             auto label_names = segmentator->getLabelNames();
             auto label_colors = segmentator->getLabelColours();
@@ -757,6 +762,7 @@ void MainWindow::on_button_NeuralNetwork_clicked()
     std::vector<cv::Mat> inf_vec = {mat_canvas};
 
     _network_inference_in_process = true;
+    _index_network_was_run_on = image_canvas->getId();
     setStatus("Inferencing network...");
 
     auto future = QtConcurrent::run(this->segmentator,
@@ -797,12 +803,12 @@ void MainWindow::on_button_NeuralNetwork_clicked()
         new_mask.id = qt_indices;
 
         new_mask.updateColor(id_labels);
-        image_canvas->setMask(new_mask);
+        auto* canvas = getImageCanvas(_index_network_was_run_on);
+        canvas->setMask(new_mask);
+        canvas->update();
+        canvas->addUndo();
 
-        image_canvas->update();
-
-        image_canvas->addUndo();
-        setStarAtNameOfTab(true);
+        setStarAtNameOfTab(true, _index_network_was_run_on);
 
 
     });

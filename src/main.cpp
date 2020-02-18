@@ -23,7 +23,7 @@ int main(int argc, char *argv[])
 
     MainWindow win;
 
-    win.setWindowTitle("PixelAnnotationTool " + VERSION);
+    win.setWindowTitle("MaskRCNNRunner " + VERSION);
     win.setWindowIcon(QIcon("://icon.png"));
 
     win.show();

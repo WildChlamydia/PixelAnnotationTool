@@ -21,7 +21,7 @@
 */
 
 #include "tensorflow_utils.hpp"
-
+#include <QDebug>
 std::vector<cv::Mat> tf_utils::convertSegmentTensorToMat(const tensorflow::Tensor& tensor,
                                                          const std::vector<std::vector<int>> &colours)
 {
@@ -31,11 +31,15 @@ std::vector<cv::Mat> tf_utils::convertSegmentTensorToMat(const tensorflow::Tenso
 #endif
     const auto& temp_tensor = tensor.tensor<tensorflow::int64, 4>();
     const auto& dims = tensor.shape();
+
+    // dims size - batch, height, width, channels
+
     std::vector<cv::Mat> imgs(size_t(dims.dim_size(0)));
 
     for(size_t example = 0; example < imgs.size(); ++example)
     {
-        imgs[example] = cv::Mat(cv::Size_<int64>(dims.dim_size(1), dims.dim_size(2)), colours.size() ? CV_8UC3 : CV_8UC1);
+        imgs[example] = cv::Mat(cv::Size_<int64>(dims.dim_size(2), dims.dim_size(1)), colours.size() ? CV_8UC3 : CV_8UC1);
+
         if(!colours.size())
             imgs[example].forEach<uchar>([&](uchar& pixel, const int position[]) -> void {
                 pixel = uchar(temp_tensor(long(example), position[0], position[1], 0));

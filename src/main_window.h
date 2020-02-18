@@ -61,6 +61,8 @@ private:
     bool _network_load_in_process = false;
     bool _network_inference_in_process = false;
 
+    int _index_network_was_run_on = -1;
+
 
 public:
 
@@ -86,7 +88,7 @@ public:
     void updateConnect(ImageCanvas *ic);
     void allDisconnnect(ImageCanvas *ic);
     void runWatershed(ImageCanvas * ic);
-    void setStarAtNameOfTab(bool star);
+    void setStarAtNameOfTab(bool star, int index = -1);
     bool eventFilter(QObject *target, QEvent *event);
 
     QString getLastNetworkPath() const;

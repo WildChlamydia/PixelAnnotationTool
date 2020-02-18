@@ -32,6 +32,7 @@
 #include <opencv2/opencv.hpp>
 #include "tensorflow/core/public/session.h"
 #include "tensorflow/core/graph/default_device.h"
+#include <QDebug>
 
 //#define TFDEBUG
 
@@ -87,6 +88,10 @@ std::vector<int> getShapesFromMessage(tensorflow::AttrValue& val);
 /// \param depth Output Tensor depth
 /// \return Ready to inference Tensor with batch of images
 ///
+///
+
+
+
 template<tensorflow::DataType T>
 tensorflow::Tensor convertMatToTensor(const std::vector<cv::Mat>& imgs, int height, int width, int depth,
                                        bool normalize, const std::vector<float>& mean) {
