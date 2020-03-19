@@ -99,6 +99,7 @@ bool TensorflowInferencer::load(const std::string &filename)
         delete _session;
         _session = nullptr;
     }
+    _graph_def.Clear();
 
     Status status = NewSession(opts, &_session);
 

@@ -1,25 +1,3 @@
-/*
-    Copyright (c) 2017 Kuprashevich Maksim, Lanit-Tercom
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
-*/
-
 #ifndef TENSORFLOWUTILS_H
 #define TENSORFLOWUTILS_H
 
@@ -32,7 +10,7 @@
 #include <opencv2/opencv.hpp>
 #include "tensorflow/core/public/session.h"
 #include "tensorflow/core/graph/default_device.h"
-#include <QDebug>
+
 
 //#define TFDEBUG
 
@@ -76,6 +54,9 @@ std::vector<cv::Mat> convertSegmentTensorToMat(const tensorflow::Tensor &tensor,
 ///
 std::vector<int> getShapesFromMessage(tensorflow::AttrValue& val);
 
+std::vector<std::vector<cv::Mat>> getRCNNMasksFromTensor(const tensorflow::Tensor& tensor,
+                                                         std::vector<std::vector<int>> classes);
+std::vector<std::vector<std::tuple<cv::Rect2f, float, int>>> getDetectionsFromTensor(const tensorflow::Tensor& tensor, const cv::Size& image_size);
 
 /// Template functions and structures
 
@@ -88,12 +69,8 @@ std::vector<int> getShapesFromMessage(tensorflow::AttrValue& val);
 /// \param depth Output Tensor depth
 /// \return Ready to inference Tensor with batch of images
 ///
-///
-
-
-
 template<tensorflow::DataType T>
-tensorflow::Tensor convertMatToTensor(const std::vector<cv::Mat>& imgs, int height, int width, int depth,
+inline tensorflow::Tensor convertMatToTensor(const std::vector<cv::Mat>& imgs, int height, int width, int depth,
                                        bool normalize, const std::vector<float>& mean) {
 
     using namespace tensorflow;
@@ -146,6 +123,52 @@ tensorflow::Tensor convertMatToTensor(const std::vector<cv::Mat>& imgs, int heig
 
     return input;
 }
+
+inline tensorflow::Tensor convertAnchorsToTensor(const std::vector< std::vector< std::vector<float> > > & vec) {
+
+    using namespace tensorflow;
+
+    if (!vec.size()) return Tensor();
+    if (!vec[0].size()) return Tensor();
+
+    int second_dim = vec[0].size();
+    int last_dim = vec[0][0].size();
+
+    Tensor input(tensorflow::DT_FLOAT, TensorShape( {(long long)vec.size(), (long long)vec[0].size(), (long long)vec[0][0].size()} ) );
+    auto input_tensor_mapped = input.tensor<float, 3>();
+
+    const auto batch_size = vec.size();
+    for (int i = 0; i < batch_size; ++i) {
+
+        for (int y = 0; y < second_dim; ++y) {
+           for (int x = 0; x < last_dim; ++x) {
+               input_tensor_mapped(i, y, x) = vec[i][y][x];
+           }
+        }
+
+    }
+    return input;
+}
+
+inline tensorflow::Tensor convertMetasToTensor(const std::vector<std::vector<float>> & vec, int last_dim = 14) {
+
+    using namespace tensorflow;
+
+    Tensor input(tensorflow::DT_FLOAT, TensorShape({(long long)vec.size(), last_dim}));
+    auto input_tensor_mapped = input.tensor<float, 2>();
+
+    const auto batch_size = vec.size();
+    for (int i = 0; i < batch_size; ++i) {
+
+        for (int y = 0; y < last_dim; ++y) {
+           input_tensor_mapped(i, y) = vec[i][y];
+        }
+
+    }
+
+    return input;
+}
+
 
 struct profiler {
     std::string name;

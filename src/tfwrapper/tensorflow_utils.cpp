@@ -1,27 +1,5 @@
-/*
-    Copyright (c) 2017 Kuprashevich Maksim, Lanit-Tercom
-
-    Permission is hereby granted, free of charge, to any person obtaining a copy
-    of this software and associated documentation files (the "Software"), to deal
-    in the Software without restriction, including without limitation the rights
-    to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-    copies of the Software, and to permit persons to whom the Software is
-    furnished to do so, subject to the following conditions:
-
-    The above copyright notice and this permission notice shall be included in all
-    copies or substantial portions of the Software.
-
-    THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-    IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-    FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-    AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-    LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-    OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-    SOFTWARE.
-*/
-
 #include "tensorflow_utils.hpp"
-#include <QDebug>
+
 std::vector<cv::Mat> tf_utils::convertSegmentTensorToMat(const tensorflow::Tensor& tensor,
                                                          const std::vector<std::vector<int>> &colours)
 {
@@ -31,9 +9,6 @@ std::vector<cv::Mat> tf_utils::convertSegmentTensorToMat(const tensorflow::Tenso
 #endif
     const auto& temp_tensor = tensor.tensor<tensorflow::int64, 4>();
     const auto& dims = tensor.shape();
-
-    // dims size - batch, height, width, channels
-
     std::vector<cv::Mat> imgs(size_t(dims.dim_size(0)));
 
     for(size_t example = 0; example < imgs.size(); ++example)
@@ -57,6 +32,37 @@ std::vector<cv::Mat> tf_utils::convertSegmentTensorToMat(const tensorflow::Tenso
 #endif
 }
 
+
+#include <QDebug>
+std::vector<std::vector<cv::Mat>> tf_utils::getRCNNMasksFromTensor(const tensorflow::Tensor& tensor,
+                                                                   std::vector<std::vector<int>> classes)
+{
+
+    const auto& temp_tensor = tensor.tensor<float, 5>();
+    const auto& dims = tensor.shape();
+    std::vector<std::vector<cv::Mat>> imgs(size_t(dims.dim_size(0)));
+
+    for(size_t example = 0; example < imgs.size(); ++example) {
+        imgs[example].resize(dims.dim_size(1));
+        for(size_t mask_num = 0; mask_num < dims.dim_size(1); ++mask_num) {
+
+            int cl = classes[example][mask_num];
+
+            imgs[example][mask_num] = cv::Mat(cv::Size_<int64>(dims.dim_size(3), dims.dim_size(2)), CV_32FC1);
+            imgs[example][mask_num].forEach<float>([&](float& pixel, const int position[]) -> void {
+
+                pixel = temp_tensor(long(example), long(mask_num), position[0], position[1], cl);
+
+            });
+
+
+        }
+    }
+
+    return imgs;
+
+}
+
 std::vector<int> tf_utils::getShapesFromMessage(tensorflow::AttrValue &val) {
     const std::string key = "size:";
 
@@ -77,7 +83,8 @@ std::vector<int> tf_utils::getShapesFromMessage(tensorflow::AttrValue &val) {
 
         pos = str.find(key, pos);
     }
-    throw std::logic_error("getShapesFromMessage didn't return");
+
+    return shapes;
 }
 
 void tf_utils::fastResizeIfPossible(const cv::Mat &in, cv::Mat *dist, const cv::Size& size)
@@ -89,26 +96,36 @@ void tf_utils::fastResizeIfPossible(const cv::Mat &in, cv::Mat *dist, const cv::
         return;
     }
 
-//    if (size.height < MAX_SIZE_FOR_PYR_METHOD && size.height < MAX_SIZE_FOR_PYR_METHOD) {
-//        if (in.rows > size.height && in.cols > size.width) {
-
-//            if ((std::abs(size.width * 2 - in.cols)) <= 2 && (std::abs(size.height * 2 - in.rows)) <= 2) {
-//                DebugOutput("using pyrdown", "");
-//                cv::pyrDown(in, *dist, size);
-//                return;
-//            }
-//        }
-//        if (in.rows < size.height && in.cols < size.width) {
-
-//            if (std::abs(size.width - in.cols * 2) == size.width % 2
-//                    && std::abs(size.height - in.rows * 2) == size.height % 2) {
-//                DebugOutput("using pyrup", "");
-//                cv::pyrUp(in, *dist, size);
-//                return;
-//            }
-//        }
-//    }
-
     cv::resize(in, *dist, size, 0, 0, cv::INTER_LINEAR);
     return;
+}
+
+std::vector<std::vector< std::tuple<cv::Rect2f, float, int> > > tf_utils::getDetectionsFromTensor(const tensorflow::Tensor &tensor,
+                                                                                                  const cv::Size& image_size)
+{
+    const auto& temp_tensor = tensor.tensor<float, 3>();
+    const auto& dims = tensor.shape();
+
+
+    std::vector<std::vector<std::tuple<cv::Rect2f, float, int>>> detections(size_t(dims.dim_size(0)));
+
+    detections.resize(dims.dim_size(0));
+    for(size_t example = 0; example < detections.size(); ++example) {
+        detections[example].resize(dims.dim_size(1), std::tuple<cv::Rect2f, float, int>(cv::Rect(), 0, 0));
+        for(size_t proporsal = 0; proporsal < dims.dim_size(1); ++proporsal) {
+
+            cv::Rect2f det;
+            det.y = temp_tensor(long(example), long(proporsal), 0);
+            det.x = temp_tensor(long(example), long(proporsal), 1);
+            det.height = (temp_tensor(long(example), long(proporsal), 2) - temp_tensor(long(example), long(proporsal), 0));
+            det.width = (temp_tensor(long(example), long(proporsal), 3) - temp_tensor(long(example), long(proporsal), 1));
+
+            int cl = round(temp_tensor(long(example), long(proporsal), 4));
+            float score = temp_tensor(long(example), long(proporsal), 5);
+
+            detections[example][proporsal] = {det, score, cl};
+        }
+    }
+
+    return detections;
 }

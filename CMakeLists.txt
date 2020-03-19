@@ -5,11 +5,13 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 
 ### Tensorflow
 if(WIN32)
-set(TensorFlow_SOURCE_DIR E:\\Development\\tf14)
-set(TensorFlow_BUILD_DIR E:\\Development\\tf14\\bazel-bin\\tensorflow)
+    set(TensorFlow_SOURCE_DIR E:\\Development\\tf14)
+    set(TensorFlow_BUILD_DIR E:\\Development\\tf14\\bazel-bin\\tensorflow)
 else()
     set(TensorFlow_SOURCE_DIR /home/undead/tensorflow)
     set(TensorFlow_BUILD_DIR /home/undead/tensorflow/bazel-bin/tensorflow)
+
+    LINK_DIRECTORIES(/usr/local/lib/)
 endif()
 
 set(CMAKE_CXX_STANDARD 11)
@@ -65,7 +67,7 @@ find_package(Qt5Widgets REQUIRED)
 if (UNIX)
 
   MESSAGE ("Build with maximum optimization for release")
-  set(CMAKE_CXX_FLAGS_RELEASE "-O3")
+  #set(CMAKE_CXX_FLAGS_RELEASE "-O3")
   set(CMAKE_CXX_STANDARD 14)
   set(CMAKE_CXX_FLAGS_DEBUG "-g")
   set(CUDA_TOOLKIT_ROOT_DIR /usr/local/cuda)
@@ -116,8 +118,8 @@ file(GLOB tensorflow_SRC
 add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
 	src/main_window.cpp
 	src/main_window.h
-	src/about_dialog.cpp
-	src/about_dialog.h
+        src/about_dialog.cpp
+        src/about_dialog.h
 	src/labels.cpp 
 	src/labels.h
 	src/utils.cpp
@@ -137,7 +139,7 @@ add_executable(PixelAnnotationTool MACOSX_BUNDLE WIN32
 if (WIN32)
     target_link_libraries(PixelAnnotationTool tensorflow tensorflow_framework protobuf protobuf-lite Qt5::Gui Qt5::Widgets ${OpenCV_LIBS} )
 else()
-    target_link_libraries(PixelAnnotationTool  -Wl,--allow-multiple-definition -Wl,--whole-archive -Wl,--no-as-needed tensorflow tensorflow_framework protobuf protobuf-lite Qt5::Gui Qt5::Widgets ${OpenCV_LIBS} )
+    target_link_libraries(PixelAnnotationTool  -Wl,--allow-multiple-definition -Wl,--whole-archive -Wl,--no-as-needed tensorflow_cc z protobuf protobuf-lite Qt5::Gui Qt5::Widgets ${OpenCV_LIBS} )
 endif()
 
 set(OpenCV_BIN ${OpenCV_LIB_PATH}/../bin)

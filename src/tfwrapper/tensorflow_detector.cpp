@@ -141,14 +141,20 @@ void TensorflowDetector::clearSession()
     _boxes.clear();
     _scores.clear();
     _classes.clear();
+#ifdef TFDEBUG
+    _bb_frames.clear();
+    _frames.clear();
+#endif
 }
 
 std::string TensorflowDetector::inference(const std::vector<cv::Mat> &imgs)
 {
 
 #ifdef TFDEBUG
+    // Is it ok? They can be changed because cv::Mat is pointer?
     _frames.clear();
     _frames = imgs;
+    _bb_frames.clear();
 #endif
 
     return TensorflowCNNInferencer::inference(imgs);
